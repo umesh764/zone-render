@@ -172,7 +172,7 @@ def init_oauth(app):
     oauth = OAuth(app)
     
     # Google OAuth
-    oauth.register(
+   oauth.register(
         name='google',
         client_id=os.environ.get('GOOGLE_CLIENT_ID'),
         client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
@@ -332,4 +332,4 @@ def handle_social_login(email, name, provider):
     
     login_user(user)
     flash(f'Logged in with {provider}!', 'success')
-    return redirect(url_for('dashboard'))
+    return redirect(url_for('payment.dashboard'))
