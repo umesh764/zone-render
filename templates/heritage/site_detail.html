@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site.name }} - विरासत स्थल{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/heritage/">होम</a></li>
+            <li class="breadcrumb-item active">{{ site.name }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <h1>{{ site.name }}</h1>
+            {% if site.is_unesco %}
+            <span class="badge bg-success mb-3">यूनेस्को विश्व धरोहर स्थल</span>
+            {% endif %}
+            
+            <!-- मुख्य छवि -->
+            {% if site.main_image %}
+            <div class="text-center mb-4">
+                <img src="{{ site.main_image }}" class="img-fluid rounded shadow" alt="{{ site.name }}" style="max-height: 400px; width: 100%; object-fit: cover;">
+            </div>
+            {% else %}
+            <div class="bg-secondary text-white d-flex justify-content-center align-items-center mb-4" style="height: 300px;">
+                <span>कोई छवि नहीं</span>
+            </div>
+            {% endif %}
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">विवरण</h5>
+                </div>
+                <div class="card-body">
+                    <p>{{ site.description or 'विवरण उपलब्ध नहीं है' }}</p>
+                    
+                    {% if site.history %}
+                    <h6 class="mt-3">📜 इतिहास:</h6>
+                    <p>{{ site.history }}</p>
+                    {% endif %}
+                    
+                    {% if site.architecture %}
+                    <h6 class="mt-3">🏗️ वास्तुकला:</h6>
+                    <p>{{ site.architecture }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- गैलरी -->
+            {% if site.gallery_images %}
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">📸 गैलरी</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if site.gallery_images is string %}
+                            {% set gallery = site.gallery_images|replace("'", '"') %}
+                            {% if gallery.startswith('[') and gallery.endswith(']') %}
+                                {% set gallery = gallery|safe %}
+                            {% endif %}
+                        {% endif %}
+                        
+                        {% for image in site.gallery_images %}
+                        <div class="col-md-4 mb-3">
+                            <img src="{{ image }}" class="img-fluid rounded" style="height: 150px; width: 100%; object-fit: cover; cursor: pointer;" onclick="showImage('{{ image }}')">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-warning">
+                    <h5 class="mb-0">ℹ️ जानकारी</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><strong>🏛️ श्रेणी:</strong> {{ site.category or 'सामान्य' }}</li>
+                        <li class="mb-2"><strong>📍 स्थान:</strong> {{ site.location or 'जानकारी नहीं' }}</li>
+                        {% if site.state %}
+                        <li class="mb-2"><strong>🏞️ राज्य:</strong> {{ site.state }}</li>
+                        {% endif %}
+                        <li class="mb-2"><strong>🇮🇳 देश:</strong> {{ site.country or 'भारत' }}</li>
+                        <li class="mb-2"><strong>🌍 महाद्वीप:</strong> {{ site.continent or 'एशिया' }}</li>
+                        {% if site.built_year %}
+                        <li class="mb-2"><strong>📅 निर्माण वर्ष:</strong> {{ site.built_year }}</li>
+                        {% endif %}
+                        {% if site.built_by %}
+                        <li class="mb-2"><strong>👑 निर्माता:</strong> {{ site.built_by }}</li>
+                        {% endif %}
+                        {% if site.visiting_hours %}
+                        <li class="mb-2"><strong>🕒 घूमने का समय:</strong> {{ site.visiting_hours }}</li>
+                        {% endif %}
+                        {% if site.entry_fee %}
+                        <li class="mb-2"><strong>💰 प्रवेश शुल्क:</strong> {{ site.entry_fee }}</li>
+                        {% endif %}
+                        {% if site.best_time %}
+                        <li class="mb-2"><strong>⏰ सबसे अच्छा समय:</strong> {{ site.best_time }}</li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- अन्य छवियां -->
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">🖼️ अन्य छवियां</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if site.architecture_image %}
+                        <div class="col-6 mb-2">
+                            <img src="{{ site.architecture_image }}" class="img-fluid rounded" style="height: 100px; width: 100%; object-fit: cover; cursor: pointer;" onclick="showImage('{{ site.architecture_image }}')">
+                            <p class="text-center small mt-1">वास्तुकला</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if site.night_image %}
+                        <div class="col-6 mb-2">
+                            <img src="{{ site.night_image }}" class="img-fluid rounded" style="height: 100px; width: 100%; object-fit: cover; cursor: pointer;" onclick="showImage('{{ site.night_image }}')">
+                            <p class="text-center small mt-1">रात का दृश्य</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if site.sketch_image %}
+                        <div class="col-6 mb-2">
+                            <img src="{{ site.sketch_image }}" class="img-fluid rounded" style="height: 100px; width: 100%; object-fit: cover; cursor: pointer;" onclick="showImage('{{ site.sketch_image }}')">
+                            <p class="text-center small mt-1">स्केच</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if site.location_image %}
+                        <div class="col-6 mb-2">
+                            <img src="{{ site.location_image }}" class="img-fluid rounded" style="height: 100px; width: 100%; object-fit: cover; cursor: pointer;" onclick="showImage('{{ site.location_image }}')">
+                            <p class="text-center small mt-1">लोकेशन</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- वापस जाएं बटन -->
+            <div class="d-grid">
+                <a href="/heritage/" class="btn btn-outline-primary">← वापस होम पेज पर</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- इमेज मोडल -->
+<div id="imageModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; justify-content:center; align-items:center;" onclick="hideModal()">
+    <img id="modalImage" style="max-width:90%; max-height:90%; object-fit:contain;">
+</div>
+
+<script>
+function showImage(imageUrl) {
+    document.getElementById('modalImage').src = imageUrl;
+    document.getElementById('imageModal').style.display = 'flex';
+}
+
+function hideModal() {
+    document.getElementById('imageModal').style.display = 'none';
+}
+
+// कीबोर्ड से एस्केप दबाने पर मोडल बंद हो
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        hideModal();
+    }
+});
+</script>
+
+<style>
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+    font-weight: bold;
+}
+.badge {
+    font-size: 0.9rem;
+    padding: 5px 10px;
+}
+.list-unstyled li {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+.list-unstyled li:last-child {
+    border-bottom: none;
+}
+img {
+    transition: transform 0.3s;
+}
+img:hover {
+    transform: scale(1.05);
+}
+</style>
+{% endblock %}

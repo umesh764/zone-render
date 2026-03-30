@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ stock.symbol }} - Live Price{% endblock %}
+
+{% block content %}
+<style>
+    .stock-detail {
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 30px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    .price {
+        font-size: 3rem;
+        font-weight: bold;
+        color: #FF9933;
+        margin: 20px 0;
+    }
+    .change {
+        font-size: 1.5rem;
+        padding: 10px;
+        border-radius: 10px;
+    }
+    .positive { color: green; background: #e8f5e9; }
+    .negative { color: red; background: #ffebee; }
+    .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-top: 30px;
+        text-align: left;
+    }
+    .info-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+    .back-btn {
+        display: inline-block;
+        margin-top: 30px;
+        padding: 12px 30px;
+        background: #FF9933;
+        color: white;
+        text-decoration: none;
+        border-radius: 25px;
+    }
+</style>
+
+<div class="stock-detail">
+    <h1>{{ stock.name }}</h1>
+    <h2>{{ stock.symbol }}</h2>
+    
+    <div class="price">₹{{ stock.price }}</div>
+    <div class="change {% if stock.change >= 0 %}positive{% else %}negative{% endif %}">
+        {% if stock.change >= 0 %}+{% endif %}{{ stock.change }}%
+    </div>
+    
+    <div class="info-grid">
+        <div class="info-item">
+            <strong>Day High</strong><br>
+            ₹{{ stock.high }}
+        </div>
+        <div class="info-item">
+            <strong>Day Low</strong><br>
+            ₹{{ stock.low }}
+        </div>
+        <div class="info-item">
+            <strong>Volume</strong><br>
+            {{ (stock.volume / 1000000)|round(1) }}M
+        </div>
+        <div class="info-item">
+            <strong>Last Updated</strong><br>
+            {{ now.strftime('%H:%M:%S') }}
+        </div>
+    </div>
+    
+    <a href="/market-live/all-stocks" class="back-btn">← Back to All Stocks</a>
+</div>
+{% endblock %}

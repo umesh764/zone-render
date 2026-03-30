@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+
+{% block title %}सभी सरकारी सेवाएं - Direct Links{% endblock %}
+
+{% block content %}
+<style>
+    .header {
+        background: linear-gradient(135deg, #FF9933, #138808);
+        padding: 40px 0;
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+    }
+    .search-section {
+        max-width: 600px;
+        margin: 0 auto 30px;
+        padding: 0 20px;
+    }
+    .search-box {
+        background: white;
+        border-radius: 50px;
+        padding: 5px 15px;
+        display: flex;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    .search-box input {
+        flex: 1;
+        padding: 12px 20px;
+        border: none;
+        outline: none;
+        border-radius: 50px;
+        font-size: 1rem;
+    }
+    .search-box button {
+        background: #FF9933;
+        border: none;
+        padding: 8px 25px;
+        border-radius: 40px;
+        color: white;
+        cursor: pointer;
+    }
+    .services-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+    .service-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+        cursor: pointer;
+        border: 1px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(255,153,51,0.2);
+        border-color: #FF9933;
+    }
+    .service-icon {
+        font-size: 2rem;
+        width: 60px;
+        text-align: center;
+    }
+    .service-info {
+        flex: 1;
+    }
+    .service-name {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #333;
+    }
+    .service-desc {
+        font-size: 0.8rem;
+        color: #666;
+    }
+    .category-badge {
+        display: inline-block;
+        background: #fff3e0;
+        padding: 2px 10px;
+        border-radius: 15px;
+        font-size: 0.7rem;
+        color: #FF9933;
+        margin-top: 5px;
+    }
+</style>
+
+<div class="header">
+    <div class="container">
+        <h1>🏛️ सभी सरकारी सेवाएं</h1>
+        <p>Direct Links - एक क्लिक पर</p>
+    </div>
+</div>
+
+<div class="search-section">
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 सेवा खोजें... (पैन, आधार, पासपोर्ट, GST, नौकरी)">
+        <button onclick="searchService()">खोजें</button>
+    </div>
+</div>
+
+<div class="services-grid" id="servicesGrid"></div>
+
+<script>
+    const services = [
+        // Finance & Tax
+        { name: "पैन कार्ड", desc: "पैन कार्ड आवेदन, अपडेट, डाउनलोड", url: "https://www.incometax.gov.in/", icon: "📄", category: "वित्त" },
+        { name: "आयकर रिटर्न (ITR)", desc: "आयकर रिटर्न भरें, स्टेटस चेक करें", url: "https://www.incometax.gov.in/itr", icon: "📊", category: "वित्त" },
+        { name: "जीएसटी (GST)", desc: "जीएसटी रजिस्ट्रेशन, रिटर्न फाइलिंग", url: "https://www.gst.gov.in", icon: "🛠️", category: "वित्त" },
+        { name: "ई-वे बिल", desc: "माल परिवहन के लिए ई-वे बिल", url: "https://ewaybill.nic.in", icon: "🚛", category: "वित्त" },
+        
+        // Identity
+        { name: "आधार कार्ड", desc: "आधार डाउनलोड, अपडेट, वेरिफाई", url: "https://uidai.gov.in", icon: "🆔", category: "पहचान" },
+        { name: "डिजिलॉकर", desc: "डिजिटल दस्तावेज़ स्टोर करें", url: "https://www.digilocker.gov.in", icon: "📁", category: "पहचान" },
+        { name: "पासपोर्ट", desc: "पासपोर्ट आवेदन, अपॉइंटमेंट", url: "https://passportindia.gov.in", icon: "📕", category: "यात्रा" },
+        
+        // Defence & Security
+        { name: "भारतीय सेना (Indian Army)", desc: "सेना भर्ती, जानकारी", url: "https://indianarmy.nic.in", icon: "🪖", category: "रक्षा" },
+        { name: "भारतीय नौसेना (Indian Navy)", desc: "नौसेना भर्ती, जानकारी", url: "https://www.indiannavy.nic.in", icon: "⚓", category: "रक्षा" },
+        { name: "भारतीय वायुसेना (IAF)", desc: "वायुसेना भर्ती, जानकारी", url: "https://indianairforce.nic.in", icon: "✈️", category: "रक्षा" },
+        { name: "भारतीय पुलिस (Police)", desc: "पुलिस भर्ती, जानकारी", url: "https://www.police.gov.in", icon: "👮", category: "रक्षा" },
+        { name: "सीआरपीएफ (CRPF)", desc: "केंद्रीय रिजर्व पुलिस बल", url: "https://crpf.gov.in", icon: "🛡️", category: "रक्षा" },
+        { name: "बीएसएफ (BSF)", desc: "सीमा सुरक्षा बल", url: "https://bsf.gov.in", icon: "🚩", category: "रक्षा" },
+        { name: "सीआईएसएफ (CISF)", desc: "केंद्रीय औद्योगिक सुरक्षा बल", url: "https://cisf.gov.in", icon: "🏭", category: "रक्षा" },
+        { name: "ऑर्डनेंस फैक्ट्री (OFB)", desc: "रक्षा उत्पादन", url: "https://ofb.gov.in", icon: "🏭", category: "रक्षा" },
+        { name: "डीआरडीओ (DRDO)", desc: "रक्षा अनुसंधान", url: "https://www.drdo.gov.in", icon: "🔬", category: "रक्षा" },
+        
+        // Jobs & Employment
+        { name: "एसएससी (SSC)", desc: "कर्मचारी चयन आयोग", url: "https://ssc.nic.in", icon: "📋", category: "रोजगार" },
+        { name: "यूपीएससी (UPSC)", desc: "संघ लोक सेवा आयोग", url: "https://upsc.gov.in", icon: "🎓", category: "रोजगार" },
+        { name: "बैंकिंग करियर (IBPS)", desc: "बैंक नौकरियां", url: "https://ibps.in", icon: "🏦", category: "रोजगार" },
+        { name: "रेलवे भर्ती (RRB)", desc: "रेलवे नौकरियां", url: "https://indianrailways.gov.in", icon: "🚂", category: "रोजगार" },
+        { name: "एनसीएस (NCS)", desc: "राष्ट्रीय करियर सेवा", url: "https://www.ncs.gov.in", icon: "💼", category: "रोजगार" },
+        
+        // Education
+        { name: "दीक्षा (DIKSHA)", desc: "डिजिटल शिक्षा प्लेटफॉर्म", url: "https://diksha.gov.in", icon: "📚", category: "शिक्षा" },
+        { name: "एनपीटीईएल (NPTEL)", desc: "ऑनलाइन कोर्स", url: "https://nptel.ac.in", icon: "🎓", category: "शिक्षा" },
+        { name: "स्कॉलरशिप (NSP)", desc: "राष्ट्रीय छात्रवृत्ति", url: "https://scholarships.gov.in", icon: "💰", category: "शिक्षा" },
+        
+        // Health
+        { name: "आयुष्मान भारत", desc: "5 लाख तक स्वास्थ्य बीमा", url: "https://pmjay.gov.in", icon: "🏥", category: "स्वास्थ्य" },
+        { name: "कोविन (CoWIN)", desc: "वैक्सीनेशन सर्टिफिकेट", url: "https://www.cowin.gov.in", icon: "💉", category: "स्वास्थ्य" },
+        
+        // Transport
+        { name: "परिवहन (Parivahan)", desc: "DL, RC, ई-चालान", url: "https://parivahan.gov.in", icon: "🚗", category: "परिवहन" }
+    ];
+    
+    function displayServices(servicesList) {
+        let html = '';
+        servicesList.forEach(s => {
+            html += `
+                <div class="service-card" onclick="window.open('${s.url}', '_blank')">
+                    <div class="service-icon">${s.icon}</div>
+                    <div class="service-info">
+                        <div class="service-name">${s.name}</div>
+                        <div class="service-desc">${s.desc}</div>
+                        <span class="category-badge">${s.category}</span>
+                    </div>
+                </div>
+            `;
+        });
+        document.getElementById('servicesGrid').innerHTML = html;
+    }
+    
+    function searchService() {
+        let query = document.getElementById('searchInput').value.toLowerCase();
+        let filtered = services.filter(s => 
+            s.name.toLowerCase().includes(query) || 
+            s.desc.toLowerCase().includes(query) ||
+            s.category.toLowerCase().includes(query)
+        );
+        displayServices(filtered);
+        if (filtered.length === 0) {
+            document.getElementById('servicesGrid').innerHTML = '<div style="text-align:center;padding:50px;">❌ कोई सेवा नहीं मिली</div>';
+        }
+    }
+    
+    displayServices(services);
+</script>
+{% endblock %}

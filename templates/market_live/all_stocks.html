@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block title %}All Stocks - Live Market{% endblock %}
+{% block content %}
+
+<div class="container" style="max-width: 1400px; margin: 0 auto; padding: 20px;">
+    <h1 style="text-align: center;">📈 Live Stock Market</h1>
+    
+    <!-- Market Summary -->
+    <div style="display: flex; justify-content: center; gap: 30px; margin: 20px 0;">
+        <div style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 15px 30px; border-radius: 10px; color: white;">
+            <h3>NIFTY 50</h3>
+            <div id="nifty" style="font-size: 24px;">Loading...</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 15px 30px; border-radius: 10px; color: white;">
+            <h3>SENSEX</h3>
+            <div id="sensex" style="font-size: 24px;">Loading...</div>
+        </div>
+    </div>
+    
+    <!-- Gainers & Losers -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+        <div style="background: white; border-radius: 10px; padding: 15px;">
+            <h3 style="color: green;">📈 Top Gainers</h3>
+            <div id="gainers"></div>
+        </div>
+        <div style="background: white; border-radius: 10px; padding: 15px;">
+            <h3 style="color: red;">📉 Top Losers</h3>
+            <div id="losers"></div>
+        </div>
+    </div>
+    
+    <!-- All Stocks -->
+    <h2>All Stocks</h2>
+    <div class="stocks-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+        {% for stock in stocks %}
+        <div class="stock-card" style="background: white; border-radius: 10px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            <h3 style="margin: 0; color: #667eea;">{{ stock.symbol }}</h3>
+            <p style="color: #666; margin: 5px 0;">{{ stock.name }}</p>
+            <p style="color: #888; font-size: 12px;">Sector: {{ stock.sector }}</p>
+            <div style="font-size: 24px; font-weight: bold; color: #4CAF50; margin: 10px 0;" id="price-{{ stock.symbol }}">
+                <span class="loading">Loading...</span>
+            </div>
+            <div style="font-size: 14px;" id="change-{{ stock.symbol }}"></div>
+            <div style="margin: 10px 0;">
+                <input type="number" id="qty-{{ stock.symbol }}" value="1" min="1" style="width: 80px; padding: 5px;">
+                <button onclick="buyStock('{{ stock.symbol }}')" style="background: #4CAF50; color: white; border: none; padding: 5px 15px; margin: 5px; cursor: pointer;">Buy</button>
+                <button onclick="sellStock('{{ stock.symbol }}')" style="background: #f44336; color: white; border: none; padding: 5px 15px; margin: 5px; cursor: pointer;">Sell</button>
+            </div>
+            <button onclick="showPrediction('{{ stock.symbol }}')" style="background: #2196F3; color: white; border: none; padding: 5px; width: 100%; cursor: pointer;">🔮 Predict</button>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div style="text-align: center; margin: 30px 0;">
+        <a href="/market-live/portfolio" style="color: #667eea;">📊 My Portfolio</a>
+    </div>
+</div>
+
+<script>
+// Load NIFTY and SENSEX
+function loadIndices() {
+    fetch('/market-live/api/nifty').then(r => r.json()).then(d => document.getElementById('nifty').innerHTML = '₹' + d.value);
+    fetch('/market-live/api/sensex').then(r => r.json()).then(d => document.getElementById('sensex').innerHTML = '₹' + d.value);
+}
+
+// Load all stock prices
+function loadAllPrices() {
+    fetch('/market-live/api/all-prices')
+        .then(r => r.json())
+        .then(data => {
+            for (let [symbol, info] of Object.entries(data)) {
+                let priceElem = document.getElementById(`price-${symbol}`);
+                let changeElem = document.getElementById(`change-${symbol}`);
+                if (priceElem) {
+                    priceElem.innerHTML = '₹' + info.price;
+                    let changeClass = info.change >= 0 ? 'green' : 'red';
+                    let changeSign = info.change >= 0 ? '▲' : '▼';
+                    if (changeElem) {
+                        changeElem.innerHTML = `<span style="color: ${info.change >= 0 ? 'green' : 'red'}">${changeSign} ${Math.abs(info.change)}%</span>`;
+                    }
+                }
+            }
+        });
+}
+
+// Load gainers and losers
+function loadGainersLosers() {
+    fetch('/market-live/api/gainers').then(r => r.json()).then(data => {
+        let html = '<ul style="list-style: none; padding: 0;">';
+        data.forEach(s => {
+            html += `<li>${s.symbol} <span style="color: green;">▲ ${s.change}%</span> ₹${s.price}</li>`;
+        });
+        html += '</ul>';
+        document.getElementById('gainers').innerHTML = html;
+    });
+    
+    fetch('/market-live/api/losers').then(r => r.json()).then(data => {
+        let html = '<ul style="list-style: none; padding: 0;">';
+        data.forEach(s => {
+            html += `<li>${s.symbol} <span style="color: red;">▼ ${Math.abs(s.change)}%</span> ₹${s.price}</li>`;
+        });
+        html += '</ul>';
+        document.getElementById('losers').innerHTML = html;
+    });
+}
+
+// Buy function
+function buyStock(symbol) {
+    console.log("🔵 Buy button clicked for:", symbol);
+    
+    let qtyElem = document.getElementById(`qty-${symbol}`);
+    let priceElem = document.getElementById(`price-${symbol}`);
+    
+    let quantity = qtyElem ? qtyElem.value : '1';
+    let priceText = priceElem ? priceElem.innerText.replace('₹', '') : '1000';
+    let price = parseFloat(priceText);
+    
+    console.log("Quantity:", quantity, "Price:", price);
+    
+    if (!quantity || parseInt(quantity) <= 0) {
+        alert('Please enter valid quantity');
+        return;
+    }
+    
+    let data = {
+        symbol: symbol,
+        quantity: parseInt(quantity),
+        price: price
+    };
+    
+    console.log("Sending data:", JSON.stringify(data));
+    
+    fetch('/market-live/buy', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        console.log("Response status:", response.status);
+        return response.json();
+    })
+    .then(data => {
+        console.log("Response data:", data);
+        if (data.success) {
+            alert('✅ ' + data.message + '\nTotal: ₹' + data.total);
+        } else {
+            alert('❌ Failed: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error("Fetch error:", error);
+        alert('❌ Error: ' + error);
+    });
+}
+
+// Sell function
+function sellStock(symbol) {
+    let qty = document.getElementById(`qty-${symbol}`).value;
+    let priceElem = document.getElementById(`price-${symbol}`);
+    let price = parseFloat(priceElem.innerText.replace('₹', ''));
+    
+    fetch('/market-live/sell', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({symbol: symbol, quantity: parseInt(qty), price: price})
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) alert('✅ ' + data.message + '\nTotal: ₹' + data.total);
+        else alert('❌ ' + data.error);
+    });
+}
+
+// Prediction
+function showPrediction(symbol) {
+    fetch(`/market-live/api/predict/${symbol}`)
+        .then(r => r.json())
+        .then(data => {
+            let emoji = data.prediction === 'UP' ? '📈' : (data.prediction === 'DOWN' ? '📉' : '➡️');
+            alert(`${emoji} ${symbol} Prediction\n\nCurrent: ₹${data.current_price}\nPrediction: ${data.prediction}\nConfidence: ${data.confidence}%\nTarget: ₹${data.target_price}`);
+        });
+}
+
+// Load everything on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadIndices();
+    loadAllPrices();
+    loadGainersLosers();
+    
+    // Refresh every 30 seconds
+    setInterval(() => {
+        loadIndices();
+        loadAllPrices();
+        loadGainersLosers();
+    }, 30000);
+});
+</script>
+
+<style>
+.green { color: green; font-weight: bold; }
+.red { color: red; font-weight: bold; }
+.loading { color: #999; font-size: 14px; }
+</style>
+{% endblock %}

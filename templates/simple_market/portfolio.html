@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Portfolio</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        h1 { text-align: center; color: #333; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th { background: #667eea; color: white; }
+        .profit { color: green; font-weight: bold; }
+        .loss { color: red; font-weight: bold; }
+        .nav-links {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        .summary {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 My Portfolio</h1>
+        <div class="nav-links">
+            <a href="/simple-market/">← Back to Market</a>
+        </div>
+        
+        {% if portfolio %}
+        <table>
+            <thead>
+                <tr><th>Symbol</th><th>Quantity</th><th>Avg Price</th><th>Invested</th>
+                    <th>Current Price</th><th>Current Value</th><th>P&L</th><th>P&L %</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in portfolio %}
+                <tr>
+                    <td>{{ item.symbol }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ item.avg_price }}</td>
+                    <td>₹{{ item.invested }}</td>
+                    <td>₹{{ item.current_price }}</td>
+                    <td>₹{{ item.current_value }}</td>
+                    <td class="{% if item.profit_loss > 0 %}profit{% else %}loss{% endif %}">
+                        ₹{{ item.profit_loss }}
+                    </td>
+                    <td class="{% if item.profit_loss_percent > 0 %}profit{% else %}loss{% endif %}">
+                        {{ item.profit_loss_percent }}%
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="summary">
+            <h3>Summary</h3>
+            <p>Total Invested: ₹{{ total_invested }}</p>
+            <p>Current Value: ₹{{ total_value }}</p>
+            <p class="{% if total_profit_loss > 0 %}profit{% else %}loss{% endif %}">
+                Total P&L: ₹{{ total_profit_loss }}
+            </p>
+        </div>
+        {% else %}
+        <p style="text-align: center;">No stocks in portfolio. <a href="/simple-market/">Buy some stocks!</a></p>
+        {% endif %}
+    </div>
+</body>
+</html>

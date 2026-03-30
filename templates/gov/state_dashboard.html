@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ state.name }} - संपूर्ण जानकारी{% endblock %}
+
+{% block content %}
+<style>
+    .hero-state {
+        background: linear-gradient(135deg, #FF9933, #FFFFFF, #138808);
+        padding: 60px 0;
+        text-align: center;
+        color: #000;
+        margin-bottom: 40px;
+    }
+    .section-card {
+        background: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 30px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .section-title {
+        color: #FF9933;
+        border-bottom: 3px solid #138808;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        display: inline-block;
+    }
+    .stat-box {
+        text-align: center;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        transition: transform 0.3s;
+    }
+    .stat-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(255,153,51,0.2);
+    }
+    .culture-item {
+        background: #fff3e0;
+        padding: 10px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+    .place-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: all 0.3s;
+    }
+    .place-card:hover {
+        border-color: #FF9933;
+        box-shadow: 0 5px 15px rgba(255,153,51,0.1);
+    }
+    .market-card {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 10px;
+        border-left: 4px solid #138808;
+    }
+    .food-badge {
+        background: #FF9933;
+        color: white;
+        padding: 5px 15px;
+        border-radius: 25px;
+        display: inline-block;
+        margin: 5px;
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-state">
+    <div class="container">
+        <h1 class="display-4">🇮🇳 {{ state.name }}</h1>
+        <p class="lead">{{ details.capital }} - राजधानी</p>
+        <p>मुख्य भाषा: {{ details.language }}</p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stat-box">
+                <h3>{{ state.total_depts }}</h3>
+                <p>सरकारी विभाग</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-box">
+                <h3>{{ details.districts or '36' }}</h3>
+                <p>जिले</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-box">
+                <h3>{{ details.population or '12.42cr' }}</h3>
+                <p>जनसंख्या</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-box">
+                <h3>{{ details.gdp or '42.5Lcr' }}</h3>
+                <p>GDP</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="culture-section">
+    <h3>🎭 संस्कृति और परंपराएं</h3>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="culture-item">
+                <strong>पारंपरिक पहनावा:</strong><br>
+                {% if details and details.culture and details.culture.dress %}
+                    {{ details.culture.dress }}
+                {% else %}
+                    <span class="text-muted">जानकारी उपलब्ध नहीं है</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="culture-item">
+                <strong>प्रसिद्ध व्यंजन:</strong><br>
+                {% if details and details.culture and details.culture.food %}
+                    {% for food in details.culture.food %}
+                        <span class="food-badge">{{ food }}</span>
+                    {% endfor %}
+                {% else %}
+                    <span class="text-muted">जानकारी उपलब्ध नहीं है</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% if details and details.culture and details.culture.festivals %}
+    <div class="row mt-3">
+        <div class="col-12">
+            <div class="culture-item">
+                <strong>प्रमुख त्योहार:</strong><br>
+                {% for festival in details.culture.festivals %}
+                    <span class="festival-badge">{{ festival }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+    
+    <!-- Famous Places -->
+    <div class="section-card">
+        <h3 class="section-title">🏛️ प्रसिद्ध स्थल</h3>
+        <div class="row">
+            {% for place in details.famous_places %}
+            <div class="col-md-4">
+                <div class="place-card">
+                    <h5>{{ place.name }}</h5>
+                    <span class="badge bg-success">{{ place.type }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Markets -->
+    <div class="section-card">
+        <h3 class="section-title">🛍️ प्रसिद्ध बाजार</h3>
+        <div class="row">
+            {% for market in details.markets %}
+            <div class="col-md-6">
+                <div class="market-card">
+                    <h5>{{ market.name }}</h5>
+                    <p><strong>{{ market.city }}</strong> - {{ market.specialty }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Government Departments -->
+    <div class="section-card">
+        <h3 class="section-title">🏢 सरकारी विभाग</h3>
+        <div class="row">
+            {% for dept in departments.items %}
+            <div class="col-md-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5>{{ dept.name }}</h5>
+                        <p class="text-muted">{{ dept.category }}</p>
+                        <p>{{ dept.description[:50] }}...</p>
+                        <a href="{{ dept.website_url }}" target="_blank" class="btn btn-sm btn-warning">वेबसाइट</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if departments.pages > 1 %}
+        <div class="text-center mt-4">
+            {% if departments.has_prev %}
+                <a href="?page={{ departments.prev_num }}" class="btn btn-warning">← पिछला</a>
+            {% endif %}
+            <span class="mx-3">पृष्ठ {{ departments.page }} / {{ departments.pages }}</span>
+            {% if departments.has_next %}
+                <a href="?page={{ departments.next_num }}" class="btn btn-warning">अगला →</a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}ck %}

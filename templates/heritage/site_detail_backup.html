@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block title %}{{ site.name }} - भारत दर्शन{% endblock %}
+
+{% block content %}
+<style>
+    .site-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+    }
+
+    .site-hero {
+        background: linear-gradient(135deg, #FF9933, #B94A2E);
+        padding: 3rem 2rem;
+        text-align: center;
+        color: white;
+        border-radius: 30px;
+        margin-bottom: 2rem;
+    }
+
+    .site-hero h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .site-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+
+    .image-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .gallery-item {
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .gallery-item img {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+
+    .gallery-item:hover img {
+        transform: scale(1.05);
+    }
+
+    .site-content {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .info-card {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+        transition: 0.3s;
+    }
+
+    .info-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(255,153,51,0.2);
+    }
+
+    .info-card i {
+        font-size: 2rem;
+        color: #FF9933;
+        margin-bottom: 1rem;
+    }
+
+    .info-card .label {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-card .value {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #4B0082;
+    }
+
+    .section-title {
+        color: #4B0082;
+        margin: 2rem 0 1rem;
+        font-size: 1.8rem;
+        border-bottom: 3px solid #FF9933;
+        padding-bottom: 0.5rem;
+    }
+
+    .description {
+        line-height: 1.8;
+        color: #444;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .back-btn {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #FF9933, #B94A2E);
+        color: white;
+        text-decoration: none;
+        border-radius: 30px;
+        margin-top: 2rem;
+        transition: 0.3s;
+        font-weight: bold;
+    }
+
+    .back-btn:hover {
+        transform: translateX(-5px);
+        box-shadow: 0 5px 15px rgba(255,153,51,0.4);
+    }
+
+    .main-image {
+        width: 100%;
+        max-height: 500px;
+        object-fit: cover;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin-bottom: 2rem;
+    }
+
+    .image-caption {
+        text-align: center;
+        color: #666;
+        font-style: italic;
+        margin-top: 0.5rem;
+    }
+</style>
+
+<div class="site-container">
+    <!-- Hero Section -->
+    <div class="site-hero">
+        <h1>{{ site.name }}</h1>
+        {% if site.name_hindi %}
+        <p class="site-subtitle">{{ site.name_hindi }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Main Image -->
+    {% if site.main_image %}
+    <div>
+        <img src="{{ site.main_image }}" alt="{{ site.name }}" class="main-image">
+        <p class="image-caption">📸 {{ site.name }} का मुख्य दृश्य</p>
+    </div>
+    {% else %}
+    <div style="height: 300px; background: linear-gradient(135deg, #FF9933, #B94A2E); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem;">
+        <span style="font-size: 5rem;">🏛️</span>
+    </div>
+    {% endif %}
+
+    <!-- Image Gallery (अगर multiple images हों) -->
+    {% if site.gallery_images %}
+    <h2 class="section-title">📸 गैलरी</h2>
+    <div class="image-gallery">
+        {% for img in site.gallery_images.split(',') %}
+        <div class="gallery-item">
+            <img src="{{ img.strip() }}" alt="{{ site.name }} गैलरी">
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Quick Info Grid -->
+    <div class="info-grid">
+        {% if site.category %}
+        <div class="info-card">
+            <i class="fas fa-tag"></i>
+            <div class="label">श्रेणी</div>
+            <div class="value">{{ site.category }}</div>
+        </div>
+        {% endif %}
+
+        {% if site.state %}
+        <div class="info-card">
+            <i class="fas fa-map-marker-alt"></i>
+            <div class="label">राज्य</div>
+            <div class="value">{{ site.state }}</div>
+        </div>
+        {% endif %}
+
+        {% if site.country %}
+        <div class="info-card">
+            <i class="fas fa-globe"></i>
+            <div class="label">देश</div>
+            <div class="value">{{ site.country }}</div>
+        </div>
+        {% endif %}
+
+        {% if site.built_year %}
+        <div class="info-card">
+            <i class="fas fa-calendar"></i>
+            <div class="label">निर्माण काल</div>
+            <div class="value">{{ site.built_year }}</div>
+        </div>
+        {% endif %}
+
+        {% if site.built_by %}
+        <div class="info-card">
+            <i class="fas fa-crown"></i>
+            <div class="label">निर्माता</div>
+            <div class="value">{{ site.built_by }}</div>
+        </div>
+        {% endif %}
+
+        {% if site.is_unesco %}
+        <div class="info-card" style="background: #FFD700;">
+            <i class="fas fa-check-circle"></i>
+            <div class="label">यूनेस्को</div>
+            <div class="value">विश्व धरोहर ({{ site.unesco_year }})</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Main Content -->
+    <div class="site-content">
+        <!-- Description -->
+        {% if site.description %}
+        <h2 class="section-title">📝 विवरण</h2>
+        <p class="description">{{ site.description }}</p>
+        {% endif %}
+
+        <!-- History -->
+        {% if site.history %}
+        <h2 class="section-title">📜 इतिहास</h2>
+        <p class="description">{{ site.history }}</p>
+        {% endif %}
+
+        <!-- Architecture -->
+        {% if site.architecture %}
+        <h2 class="section-title">🏗️ वास्तुकला</h2>
+        <p class="description">{{ site.architecture }}</p>
+        {% endif %}
+
+        <!-- Architecture Image -->
+        {% if site.architecture_image %}
+        <div style="margin: 2rem 0;">
+            <img src="{{ site.architecture_image }}" alt="{{ site.name }} की वास्तुकला" style="width:100%; border-radius:15px;">
+            <p class="image-caption">🏛️ वास्तुकला का विशेष दृश्य</p>
+        </div>
+        {% endif %}
+
+        <!-- Night View -->
+        {% if site.night_image %}
+        <div style="margin: 2rem 0;">
+            <img src="{{ site.night_image }}" alt="{{ site.name }} का रात्रि दृश्य" style="width:100%; border-radius:15px;">
+            <p class="image-caption">🌙 रात्रि दृश्य</p>
+        </div>
+        {% endif %}
+
+        <!-- Visiting Info -->
+        {% if site.visiting_hours or site.entry_fee or site.best_time %}
+        <h2 class="section-title">🕒 दर्शन जानकारी</h2>
+        <div class="info-grid">
+            {% if site.visiting_hours %}
+            <div class="info-card">
+                <i class="fas fa-clock"></i>
+                <div class="label">दर्शन समय</div>
+                <div class="value">{{ site.visiting_hours }}</div>
+            </div>
+            {% endif %}
+
+            {% if site.entry_fee %}
+            <div class="info-card">
+                <i class="fas fa-ticket-alt"></i>
+                <div class="label">प्रवेश शुल्क</div>
+                <div class="value">{{ site.entry_fee }}</div>
+            </div>
+            {% endif %}
+
+            {% if site.best_time %}
+            <div class="info-card">
+                <i class="fas fa-sun"></i>
+                <div class="label">घूमने का समय</div>
+                <div class="value">{{ site.best_time }}</div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Back Button -->
+    <div style="text-align: center;">
+        <a href="javascript:history.back()" class="back-btn">← वापस जाएं</a>
+    </div>
+</div>
+{% endblock %}

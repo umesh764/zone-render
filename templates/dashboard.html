@@ -1,0 +1,690 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - HAT PAY{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-section {
+        padding: 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 80vh;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dashboard-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 50%);
+        animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .dashboard-container {
+        max-width: 1200px;
+        margin: 20px auto;
+        position: relative;
+        z-index: 1;
+        padding: 0 20px;
+    }
+
+    /* Welcome Card */
+    .welcome-card {
+        background: linear-gradient(135deg, #FF6B35, #FF4500, #FF8C42);
+        background-size: 200% 200%;
+        animation: gradientBG 5s ease infinite;
+        color: white;
+        padding: 2rem;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        box-shadow: 0 20px 40px rgba(255, 107, 53, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+
+    .welcome-card::before {
+        content: '🧡';
+        position: absolute;
+        right: -20px;
+        bottom: -20px;
+        font-size: 150px;
+        opacity: 0.2;
+        transform: rotate(-15deg);
+    }
+
+    .welcome-card h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .welcome-card p {
+        font-size: 1rem;
+        opacity: 0.95;
+    }
+
+    /* News Belt Styles */
+    .news-belt {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #ff6b35;
+        z-index: 100000;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        transition: transform 0.3s ease;
+    }
+
+    .news-belt.collapsed {
+        transform: translateY(-42px);
+    }
+
+    .news-belt-container {
+        display: flex;
+        align-items: center;
+        padding: 4px 15px;
+        gap: 10px;
+    }
+
+    .news-belt-icon {
+        background: white;
+        padding: 2px 8px;
+        border-radius: 15px;
+        font-size: 12px;
+        font-weight: bold;
+        color: #ff6b35;
+        flex-shrink: 0;
+    }
+
+    .news-belt-content {
+        flex: 1;
+        overflow: hidden;
+        height: 32px;
+        display: flex;
+        align-items: center;
+    }
+
+    .news-ticker {
+        white-space: nowrap;
+        animation: ticker-scroll 60s linear infinite;
+        font-size: 12px;
+    }
+
+    .news-ticker:hover {
+        animation-play-state: paused;
+    }
+
+    @keyframes ticker-scroll {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+    }
+
+    .news-item {
+        display: inline-block;
+        margin-right: 30px;
+        cursor: pointer;
+        color: white !important;
+        text-decoration: none;
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 15px;
+        background: rgba(255,255,255,0.2);
+    }
+
+    .news-item:hover {
+        background: rgba(255,255,255,0.4);
+    }
+
+    .news-item .source {
+        font-size: 10px;
+        margin-left: 5px;
+        color: #ffffaa;
+    }
+
+    .belt-toggle-btn {
+        background: white;
+        border: none;
+        color: #ff6b35;
+        cursor: pointer;
+        padding: 2px 8px;
+        border-radius: 15px;
+        font-size: 11px;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    .belt-toggle-btn:hover {
+        background: #ffddcc;
+    }
+
+    .news-loading {
+        color: white;
+        font-size: 11px;
+        background: rgba(255,255,255,0.2);
+        padding: 2px 10px;
+        border-radius: 15px;
+    }
+
+    /* Body padding for fixed belt */
+    body {
+        padding-top: 48px !important;
+        margin: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(255, 107, 53, 0.2);
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #FF6B35;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        color: #666;
+        font-weight: 500;
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: block;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px rgba(255, 107, 53, 0.3);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .card-header i {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-header h3 {
+        font-size: 1.3rem;
+        margin: 0;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .card-body p {
+        color: #666;
+        margin-bottom: 1rem;
+    }
+
+    .card-icon {
+        font-size: 2.5rem;
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-align: center;
+        color: #333;
+    }
+
+    .card-desc {
+        font-size: 0.8rem;
+        text-align: center;
+        color: #666;
+        padding: 0 1rem 1rem;
+    }
+
+    .card-badge {
+        display: block;
+        text-align: center;
+        background: #ff6b35;
+        color: white;
+        padding: 0.5rem;
+        margin: 0.5rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+    }
+
+    .btn-card {
+        background: linear-gradient(135deg, #FF6B35, #FF4500);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(255, 107, 53, 0.4);
+    }
+
+    /* Recent Payments */
+    .recent-payments {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        margin-top: 2rem;
+    }
+
+    .recent-payments h2 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: #FF6B35;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .payment-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .payment-table th {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 0.8rem;
+        text-align: left;
+    }
+
+    .payment-table td {
+        padding: 0.8rem;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .status-success {
+        background: #d4edda;
+        color: #155724;
+        padding: 0.2rem 0.6rem;
+        border-radius: 20px;
+        display: inline-block;
+        font-size: 0.8rem;
+    }
+
+    .status-pending {
+        background: #fff3cd;
+        color: #856404;
+        padding: 0.2rem 0.6rem;
+        border-radius: 20px;
+        display: inline-block;
+        font-size: 0.8rem;
+    }
+
+    .amount-col {
+        font-weight: 700;
+        color: #28a745;
+    }
+
+    .btn-download {
+        background: #28a745;
+        color: white;
+        padding: 0.3rem 0.8rem;
+        border-radius: 5px;
+        text-decoration: none;
+        font-size: 0.8rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #999;
+    }
+
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+        .welcome-card h1 {
+            font-size: 1.5rem;
+        }
+        body {
+            padding-top: 55px !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<!-- News Notification Belt -->
+<div id="news-belt" class="news-belt">
+    <div class="news-belt-container">
+        <div class="news-belt-icon">📰</div>
+        <div class="news-belt-content" id="news-belt-content">
+            <div id="news-ticker" class="news-ticker">🔔 Loading news...</div>
+        </div>
+        <button onclick="toggleNewsBelt()" class="belt-toggle-btn">▶</button>
+    </div>
+</div><div class="dashboard-container">
+    <!-- Welcome Card -->
+    <div class="welcome-card">
+        <h1><i class="fas fa-hand-peace"></i> Welcome back, {{ current_user.name }}!</h1>
+        <p><i class="fas fa-phone"></i> {{ current_user.phone }}</p>
+        <p><i class="fas fa-envelope"></i> {{ current_user.email or 'No email provided' }}</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-number">{{ payments|length }}</div>
+            <div class="stat-label">Total Transactions</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-number">{{ payments|selectattr('status', 'equalto', 'success')|list|length }}</div>
+            <div class="stat-label">Successful</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-number">{{ payments|selectattr('status', 'equalto', 'pending')|list|length }}</div>
+            <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">📊</div>
+            <div class="stat-number">₹{{ payments|sum(attribute='amount')|round(2) }}</div>
+            <div class="stat-label">Total Amount</div>
+        </div>
+    </div>
+
+    <!-- Service Cards -->
+    <div class="dashboard-grid">
+        <a href="/entertainment" class="dashboard-card">
+            <div class="card-icon">🎬</div>
+            <div class="card-title">Entertainment</div>
+            <div class="card-desc">Movies, Events, Sports</div>
+            <span class="card-badge">Book Now</span>
+        </a>
+
+        <a href="{{ url_for('market.home') }}" class="dashboard-card">
+            <div class="card-icon">🛍️</div>
+            <div class="card-title">Nagpur Market</div>
+            <div class="card-desc">Local shops, services & order on WhatsApp</div>
+            <span class="card-badge">Explore</span>
+        </a>
+
+        <a href="/shopping" class="dashboard-card">
+            <div class="card-icon">🛍️</div>
+            <div class="card-title">Shopping</div>
+            <div class="card-desc">Amazon, Flipkart, Myntra</div>
+            <span class="card-badge">Shop Now</span>
+        </a>
+
+        <a href="/travel" class="dashboard-card">
+            <div class="card-icon">✈️</div>
+            <div class="card-title">Travel</div>
+            <div class="card-desc">Flights, Hotels, Trains</div>
+            <span class="card-badge">Book</span>
+        </a>
+
+        <a href="/fastag" class="dashboard-card">
+            <div class="card-icon">🚗</div>
+            <div class="card-title">FASTag</div>
+            <div class="card-desc">Recharge & Manage</div>
+            <span class="card-badge">Manage</span>
+        </a>
+
+        <a href="/rewards" class="dashboard-card">
+            <div class="card-icon">🎁</div>
+            <div class="card-title">Rewards</div>
+            <div class="card-desc">Cashback & Points</div>
+            <span class="card-badge">Claim</span>
+        </a>
+    </div>
+
+    <!-- Quick Actions Grid -->
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <i class="fas fa-qrcode"></i>
+                <h3>Quick Pay</h3>
+            </div>
+            <div class="card-body">
+                <p>Make instant payment via QR code</p>
+                <a href="{{ url_for('payment.payment') }}" class="btn-card">Pay Now</a>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <i class="fas fa-history"></i>
+                <h3>History</h3>
+            </div>
+            <div class="card-body">
+                <p>View all your payment history</p>
+                <a href="{{ url_for('payment.payment_history') }}" class="btn-card">View History</a>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <i class="fas fa-camera"></i>
+                <h3>Scan & Pay</h3>
+            </div>
+            <div class="card-body">
+                <p>Scan any UPI QR code to pay</p>
+                <a href="{{ url_for('payment.payment') }}" class="btn-card">Scan Now</a>
+            </div>
+        </div>
+
+        <div class="dashboard-card">
+            <div class="card-header">
+                <i class="fas fa-file-invoice"></i>
+                <h3>Receipts</h3>
+            </div>
+            <div class="card-body">
+                <p>Download payment receipts</p>
+                <a href="{{ url_for('payment.payment_history') }}" class="btn-card">View Receipts</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Payments -->
+    <div class="recent-payments">
+        <h2><i class="fas fa-clock"></i> Recent Transactions</h2>
+        <div class="table-container">
+            <table class="payment-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Transaction ID</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Receipt</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for payment in payments[:5] %}
+                    <tr>
+                        <td>{{ payment.created_at.strftime('%d-%m-%Y') }}</td>
+                        <td><span style="font-family: monospace;">{{ payment.transaction_id }}</span></td>
+                        <td class="amount-col">₹{{ "%.2f"|format(payment.amount) }}</td>
+                        <td><span class="status-{{ payment.status }}">{{ payment.status|upper }}</span></td>
+                        <td>
+                            {% if payment.receipt_path %}
+                                <a href="{{ url_for('static', filename='receipts/' + payment.receipt_path) }}" target="_blank" class="btn-download">Download</a>
+                            {% else %}
+                                <span style="color: #999;">Not available</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <i class="fas fa-receipt"></i>
+                                <h3>No transactions yet</h3>
+                                <p>Make your first payment to see it here!</p>
+                                <a href="{{ url_for('payment.payment') }}" class="btn-card">Make Payment</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+function fetchLatestNews() {
+    console.log('Fetching news...');
+    fetch('/api/news/latest')
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            console.log('News data:', data);
+            var ticker = document.getElementById('news-ticker');
+            if (ticker && data.status === 'ok' && data.news && data.news.length > 0) {
+                var html = '';
+                for (var i = 0; i < data.news.length; i++) {
+                    var item = data.news[i];
+                    html += '<a href="' + item.url + '" target="_blank" class="news-item">🔔 ' + (item.title || 'No title') + '<span class="source">📌 ' + (item.source || 'News') + '</span></a>';
+                }
+                ticker.innerHTML = html;
+                console.log('News updated:', data.news.length);
+            } else {
+                console.log('No news or ticker not found');
+            }
+        })
+        .catch(function(err) {
+            console.log('Error:', err);
+        });
+}
+
+function toggleNewsBelt() {
+    var belt = document.getElementById('news-belt');
+    var btn = document.querySelector('.belt-toggle-btn');
+    if (belt.classList.contains('collapsed')) {
+        belt.classList.remove('collapsed');
+        btn.textContent = '▶';
+    } else {
+        belt.classList.add('collapsed');
+        btn.textContent = '▼';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetchLatestNews();
+    setInterval(fetchLatestNews, 30000);
+});
+</script>
+<script>
+function fetchLatestNews() {
+    fetch('/api/news/latest')
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            var container = document.getElementById('news-belt-content');
+            if (container && data.news && data.news.length > 0) {
+                var html = '<div class="news-ticker">';
+                for (var i = 0; i < data.news.length; i++) {
+                    var item = data.news[i];
+                    html += '<a href="' + item.url + '" target="_blank" class="news-item">🔔 ' + item.title + '<span class="source">📌 ' + item.source + '</span></a>';
+                }
+                html += '</div>';
+                container.innerHTML = html;
+                console.log('News updated:', data.news.length);
+            } else {
+                console.log('No news found');
+            }
+        })
+        .catch(function(err) {
+            console.log('Error:', err);
+        });
+}
+
+function toggleNewsBelt() {
+    var belt = document.getElementById('news-belt');
+    var btn = document.querySelector('.belt-toggle-btn');
+    if (belt.classList.contains('collapsed')) {
+        belt.classList.remove('collapsed');
+        btn.textContent = '▶';
+    } else {
+        belt.classList.add('collapsed');
+        btn.textContent = '▼';
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetchLatestNews();
+    setInterval(fetchLatestNews, 30000);
+});
+</script>
+{% endblock %}

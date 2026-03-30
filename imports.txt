@@ -1,0 +1,148 @@
+app.py:from flask import Flask, render_template, session, redirect, request, url_for, flash, jsonify
+app.py:from flask_login import LoginManager
+app.py:from flask_bcrypt import Bcrypt
+app.py:from flask_wtf.csrf import CSRFProtect
+app.py:from flask_limiter import Limiter
+app.py:from flask_limiter.util import get_remote_address
+app.py:from flask_talisman import Talisman
+app.py:from dotenv import load_dotenv
+app.py:from datetime import datetime
+app.py:from modules.models import db
+config.py:from dotenv import load_dotenv
+extensions.py:from flask_wtf.csrf import CSRFProtect
+extensions.py:from flask_limiter import Limiter
+extensions.py:from flask_limiter.util import get_remote_address
+extensions.py:from flask_talisman import Talisman
+modules\ai_assistant.py:from flask import Blueprint, render_template, request, jsonify
+modules\ai_assistant.py:from bs4 import BeautifulSoup
+modules\ai_assistant.py:from werkzeug.utils import secure_filename
+modules\ai_assistant.py:from datetime import datetime, timedelta
+modules\auth.py:from flask import Blueprint, render_template, request, flash, redirect, url_for, session
+modules\auth.py:from flask_login import login_user, logout_user, login_required, current_user
+modules\auth.py:from flask_bcrypt import Bcrypt
+modules\auth.py:from flask_login import LoginManager
+modules\auth.py:from extensions import limiter
+modules\auth.py:from modules.models import db, User, OTPVerification
+modules\auth.py:from datetime import datetime, timedelta
+modules\bharat.py:from flask import Blueprint, render_template, request, jsonify
+modules\bharat.py:from modules.models import db, BharatDarshan
+modules\bharat.py:from sqlalchemy import or_
+modules\bharat_backup.py:from flask import Blueprint, render_template, request, jsonify
+modules\bharat_backup.py:from modules.models import db, BharatDarshan
+modules\bharat_backup.py:from sqlalchemy import or_
+modules\bills.py:from flask import Blueprint, render_template, request, flash, redirect, url_for
+modules\bills.py:from flask_login import login_required, current_user
+modules\bills.py:from modules.models import db, Bill
+modules\bills.py:from datetime import datetime
+modules\cibil.py:from flask import Blueprint, render_template
+modules\entertainment.py:from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify
+modules\entertainment.py:from flask_login import login_required, current_user
+modules\entertainment.py:from modules.models import db, City, Theatre, Movie, Show, Event, SportsMatch, Booking, Rating, UserPreference
+modules\entertainment.py:from datetime import datetime, timedelta
+modules\entertainment.py:from io import BytesIO
+modules\fastag.py:from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify
+modules\fastag.py:from flask_login import login_required, current_user
+modules\fastag.py:from modules.models import db, FASTag, FASTagTransaction, FASTagRecharge
+modules\fastag.py:from datetime import datetime, timedelta
+modules\forms.py:from flask_wtf import FlaskForm
+modules\forms.py:from wtforms import StringField, TextAreaField, EmailField, TelField
+modules\forms.py:from wtforms.validators import DataRequired, Email, Length, Optional
+modules\gov.py:from flask import Blueprint, render_template, request, jsonify
+modules\gov.py:from modules.models import db, GovernmentDepartment
+modules\gov.py:from modules.gov_services import GovernmentServices
+modules\gov.py:from sqlalchemy import or_
+modules\heritage.py:from flask import Blueprint, render_template, request, jsonify
+modules\heritage.py:from modules.models import db, HeritageSite
+modules\heritage.py:from sqlalchemy import or_
+modules\insurance.py:from flask import Blueprint, render_template
+modules\language.py:from flask import Blueprint, session, request, redirect, url_for, flash
+modules\market.py:from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+modules\market.py:from flask_login import login_required, current_user
+modules\market.py:from modules.models import db, LocalShop
+modules\market.py:from werkzeug.utils import secure_filename
+modules\market.py:from flask import current_app
+modules\market_live.py:from datetime import datetime
+modules\market_live.py:from flask import Blueprint, render_template, jsonify, request, session
+modules\market_live_backup.py:from datetime import datetime
+modules\market_live_backup.py:from flask import Blueprint, render_template, jsonify, request, session
+modules\models.py:from flask_sqlalchemy import SQLAlchemy
+modules\models.py:from flask_login import UserMixin
+modules\models.py:from datetime import datetime
+modules\ott.py:from flask import Blueprint, render_template
+modules\payment.py:from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify
+modules\payment.py:from flask_login import login_required, current_user
+modules\payment.py:from modules.models import db, Payment, User, SIP, Gold, Silver, Recharge, Bill, Loan, LoanPayment
+modules\payment.py:from datetime import datetime, timedelta
+modules\payment.py:from io import BytesIO
+modules\rewards.py:from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify
+modules\rewards.py:from flask_login import login_required, current_user
+modules\rewards.py:from modules.models import db, Wallet, Transaction, Cashback, Reward, Referral, DailyReward, Achievement, Offer, Coupon, User
+modules\rewards.py:from datetime import datetime, timedelta
+modules\routes.py:from flask import Blueprint, render_template
+modules\shopping.py:from flask import Blueprint, render_template, redirect, url_for, request, flash, jsonify
+modules\shopping.py:from flask_login import login_required, current_user
+modules\shopping.py:from modules.models import db, Payment
+modules\shopping.py:from datetime import datetime
+modules\simple_market.py:from flask import Blueprint, render_template, jsonify, request, session
+modules\simple_market.py:from datetime import datetime
+modules\travel.py:from flask import Blueprint, render_template, request, flash, redirect, url_for, session, jsonify
+modules\travel.py:from flask_login import login_required, current_user
+modules\travel.py:from modules.models import db, TravelCity, Airline, Flight, Train, BusOperator, Bus, Hotel, HotelRoom, Cab, HolidayPackage, TravelBooking, TravelPassenger, TravelInsurance, PriceAlert, TravelReview
+modules\travel.py:from datetime import datetime, timedelta
+news_notifier.py:from datetime import datetime
+news_notifier.py:from flask import Blueprint, jsonify
+run.py:from app import create_app
+wsgi.py:from app import create_app
+app.py:import os
+app.py:import calendar
+app.py:import json
+config.py:import os
+modules\ai_assistant.py:import os
+modules\ai_assistant.py:import requests
+modules\ai_assistant.py:import feedparser
+modules\ai_assistant.py:import json
+modules\ai_assistant.py:import uuid
+modules\auth.py:import random
+modules\auth.py:import re
+modules\bills.py:import uuid
+modules\entertainment.py:import uuid
+modules\entertainment.py:import random
+modules\entertainment.py:import json
+modules\entertainment.py:import qrcode
+modules\entertainment.py:import os
+modules\entertainment.py:import base64
+modules\fastag.py:import uuid
+modules\fastag.py:import random
+modules\market.py:import json
+modules\market.py:import os
+modules\market_live.py:import yfinance as yf
+modules\market_live.py:import sqlite3
+modules\market_live.py:import os
+modules\market_live.py:import socket
+modules\market_live.py:import random
+modules\market_live_backup.py:import yfinance as yf
+modules\market_live_backup.py:import sqlite3
+modules\market_live_backup.py:import os
+modules\market_live_backup.py:import socket
+modules\market_live_backup.py:import random
+modules\payment.py:import qrcode
+modules\payment.py:import uuid
+modules\payment.py:import os
+modules\payment.py:import re
+modules\payment.py:import base64
+modules\rewards.py:import uuid
+modules\rewards.py:import random
+modules\rewards.py:import string
+modules\rewards.py:import json
+modules\routes.py:import datetime
+modules\shopping.py:import uuid
+modules\simple_market.py:import json
+modules\simple_market.py:import os
+modules\travel.py:import uuid
+modules\travel.py:import random
+modules\travel.py:import json
+modules\travel.py:import math
+modules\utils.py:import datetime
+modules\utils.py:import random
+news_notifier.py:import time
+news_notifier.py:import threading

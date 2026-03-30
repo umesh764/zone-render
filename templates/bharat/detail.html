@@ -1,0 +1,320 @@
+{% extends "base.html" %}
+
+{% block title %}{{ item.name }} - भारत दर्शन{% endblock %}
+
+{% block content %}
+<style>
+    .detail-container {
+        max-width: 1000px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+    }
+
+    .detail-header {
+        background: linear-gradient(135deg, #FF9933, #138808);
+        padding: 3rem 2rem;
+        text-align: center;
+        color: white;
+        border-radius: 30px;
+        margin-bottom: 2rem;
+    }
+
+    .detail-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .detail-subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+
+    .main-image {
+        width: 100%;
+        max-height: 400px;
+        object-fit: cover;
+        border-radius: 20px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+
+    .info-card {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-align: center;
+        transition: 0.3s;
+    }
+
+    .info-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(255,153,51,0.2);
+    }
+
+    .info-card i {
+        font-size: 2rem;
+        color: #FF9933;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-card .label {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-card .value {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #000080;
+    }
+
+    .section-title {
+        color: #000080;
+        margin: 2rem 0 1rem;
+        font-size: 1.5rem;
+        border-bottom: 3px solid #FF9933;
+        padding-bottom: 0.5rem;
+    }
+
+    .description {
+        line-height: 1.8;
+        color: #444;
+        font-size: 1.1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .detail-text {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+    }
+
+    .back-btn {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, #FF9933, #138808);
+        color: white;
+        text-decoration: none;
+        border-radius: 30px;
+        margin-top: 2rem;
+        transition: 0.3s;
+        font-weight: bold;
+    }
+
+    .back-btn:hover {
+        transform: translateX(-5px);
+        box-shadow: 0 5px 15px rgba(255,153,51,0.4);
+    }
+
+    .meta-tag {
+        display: inline-block;
+        background: #f0f0f0;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .meta-tag i {
+        color: #FF9933;
+        margin-right: 0.3rem;
+    }
+</style>
+
+<div class="detail-container">
+    <!-- Header -->
+    <div class="detail-header">
+        <h1>{{ item.name }}</h1>
+        {% if item.name_hindi %}
+        <p class="detail-subtitle">{{ item.name_hindi }}</p>
+        {% endif %}
+    </div>
+
+    <!-- Main Image -->
+    {% if item.main_image %}
+    <img src="{{ item.main_image }}" alt="{{ item.name }}" class="main-image">
+    {% else %}
+    <div style="height: 300px; background: linear-gradient(135deg, #FF9933, #138808); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 2rem;">
+        <span style="font-size: 5rem;">🇮🇳</span>
+    </div>
+    {% endif %}
+
+    <!-- Quick Info Grid -->
+    <div class="info-grid">
+        {% if item.state %}
+        <div class="info-card">
+            <i class="fas fa-map-marker-alt"></i>
+            <div class="label">राज्य</div>
+            <div class="value">{{ item.state }}</div>
+        </div>
+        {% endif %}
+
+        {% if item.city %}
+        <div class="info-card">
+            <i class="fas fa-city"></i>
+            <div class="label">शहर/जिला</div>
+            <div class="value">{{ item.city }}</div>
+        </div>
+        {% endif %}
+
+        {% if item.category %}
+        <div class="info-card">
+            <i class="fas fa-tag"></i>
+            <div class="label">श्रेणी</div>
+            <div class="value">{{ item.category }}</div>
+        </div>
+        {% endif %}
+
+        {% if item.subcategory %}
+        <div class="info-card">
+            <i class="fas fa-layer-group"></i>
+            <div class="label">उपश्रेणी</div>
+            <div class="value">{{ item.subcategory }}</div>
+        </div>
+        {% endif %}
+
+        {% if item.festival_month %}
+        <div class="info-card">
+            <i class="fas fa-calendar-alt"></i>
+            <div class="label">त्योहार का महीना</div>
+            <div class="value">{{ item.festival_month }}</div>
+        </div>
+        {% endif %}
+
+        {% if item.best_time_to_visit %}
+        <div class="info-card">
+            <i class="fas fa-clock"></i>
+            <div class="label">घूमने का समय</div>
+            <div class="value">{{ item.best_time_to_visit }}</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Description -->
+    {% if item.description %}
+    <div class="detail-text">
+        <h2 class="section-title">📝 विवरण</h2>
+        <p class="description">{{ item.description }}</p>
+    </div>
+    {% endif %}
+
+    <!-- History -->
+    {% if item.history %}
+    <div class="detail-text">
+        <h2 class="section-title">📜 इतिहास / पौराणिक कथा</h2>
+        <p class="description">{{ item.history }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Cultural Facts -->
+    {% if item.cultural_facts %}
+    <div class="detail-text">
+        <h2 class="section-title">✨ सांस्कृतिक तथ्य</h2>
+        <p class="description">{{ item.cultural_facts }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Significance -->
+    {% if item.significance %}
+    <div class="detail-text">
+        <h2 class="section-title">🌟 महत्व</h2>
+        <p class="description">{{ item.significance }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Food -->
+    {% if item.cuisine or item.famous_food %}
+    <div class="detail-text">
+        <h2 class="section-title">🍲 प्रसिद्ध व्यंजन</h2>
+        <p class="description">{{ item.cuisine or item.famous_food }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Dress Code -->
+    {% if item.dress_code %}
+    <div class="detail-text">
+        <h2 class="section-title">👘 वेशभूषा / पहनावा</h2>
+        <p class="description">{{ item.dress_code }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Markets -->
+    {% if item.famous_markets %}
+    <div class="detail-text">
+        <h2 class="section-title">🛍️ प्रसिद्ध बाज़ार</h2>
+        <p class="description">{{ item.famous_markets }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Transport Info -->
+    {% if item.how_to_reach or item.nearest_railway or item.nearest_airport or item.local_transport %}
+    <div class="detail-text">
+        <h2 class="section-title">🚗 कैसे पहुंचे</h2>
+        
+        {% if item.how_to_reach %}
+        <p><strong>सामान्य जानकारी:</strong> {{ item.how_to_reach }}</p>
+        {% endif %}
+        
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem;">
+            {% if item.nearest_railway %}
+            <span class="meta-tag"><i class="fas fa-train"></i> {{ item.nearest_railway }}</span>
+            {% endif %}
+            
+            {% if item.nearest_airport %}
+            <span class="meta-tag"><i class="fas fa-plane"></i> {{ item.nearest_airport }}</span>
+            {% endif %}
+            
+            {% if item.nearest_bus_stop %}
+            <span class="meta-tag"><i class="fas fa-bus"></i> {{ item.nearest_bus_stop }}</span>
+            {% endif %}
+        </div>
+        
+        {% if item.local_transport %}
+        <p style="margin-top: 1rem;"><strong>स्थानीय परिवहन:</strong> {{ item.local_transport }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Languages -->
+    {% if item.languages %}
+    <div class="detail-text">
+        <h2 class="section-title">🗣️ बोली जाने वाली भाषाएँ</h2>
+        <p class="description">{{ item.languages }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Address & Map -->
+    {% if item.address or item.map_url %}
+    <div class="detail-text">
+        <h2 class="section-title">📍 स्थान</h2>
+        {% if item.address %}
+        <p>{{ item.address }}</p>
+        {% endif %}
+        
+        {% if item.latitude and item.longitude %}
+        <p style="font-family: monospace;">GPS: {{ item.latitude }}, {{ item.longitude }}</p>
+        {% endif %}
+        
+        {% if item.map_url %}
+        <p><a href="{{ item.map_url }}" target="_blank" style="color: #FF9933;">गूगल मैप देखें →</a></p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Back Button -->
+    <div style="text-align: center;">
+        <a href="javascript:history.back()" class="back-btn">← वापस जाएं</a>
+    </div>
+</div>
+{% endblock %}

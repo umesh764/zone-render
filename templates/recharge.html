@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+
+{% block title %}Mobile Recharge - Zone{% endblock %}
+
+{% block content %}
+<style>
+    .recharge-section {
+        padding: 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .recharge-container {
+        max-width: 500px;
+        width: 100%;
+    }
+    .recharge-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .recharge-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    .recharge-header h2 {
+        font-size: 2rem;
+        color: #667eea;
+        margin-bottom: 0.5rem;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
+    }
+    .operator-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        margin: 1rem 0;
+    }
+    .operator-btn {
+        padding: 1rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        background: white;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .operator-btn:hover {
+        border-color: #667eea;
+        background: #667eea;
+        color: white;
+    }
+    .operator-btn.selected {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+    }
+    .btn-submit {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, #28a745, #20c997);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 1rem;
+    }
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(40,167,69,0.3);
+    }
+    
+    /* Google Search Bar Styles */
+    .google-search-wrapper {
+        margin-bottom: 30px;
+        background: white;
+        border-radius: 20px;
+        padding: 1.5rem;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    }
+    .google-logo {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .google-logo h3 {
+        font-size: 28px;
+        background: linear-gradient(135deg, #4285F4, #EA4335, #FBBC05, #34A853);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0;
+    }
+    .google-search-bar {
+        display: flex;
+        border: 1px solid #dfe1e5;
+        border-radius: 24px;
+        padding: 5px 15px;
+        background: white;
+        transition: box-shadow 0.3s ease;
+    }
+    .google-search-bar:hover {
+        box-shadow: 0 1px 6px rgba(32,33,36,0.28);
+    }
+    .google-search-bar input {
+        flex: 1;
+        padding: 12px;
+        border: none;
+        outline: none;
+        font-size: 16px;
+        background: transparent;
+    }
+    .google-search-bar button {
+        background: none;
+        border: none;
+        padding: 0 15px;
+        cursor: pointer;
+        color: #4285F4;
+        font-weight: 500;
+    }
+    .google-services {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #f0f0f0;
+    }
+    .google-service-link {
+        text-decoration: none;
+        color: #5f6368;
+        padding: 8px 15px;
+        border-radius: 20px;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 14px;
+    }
+    .google-service-link:hover {
+        background: #e8e8e8;
+        transform: translateY(-2px);
+    }
+    .divider {
+        margin: 20px 0;
+        border: none;
+        border-top: 2px solid #e0e0e0;
+    }
+</style>
+
+<section class="recharge-section">
+    <div class="recharge-container">
+        
+        <!-- GOOGLE SEARCH SECTION - NEW ADDED -->
+        <div class="google-search-wrapper">
+            <div class="google-logo">
+                <h3>🔍 Google Search Hub</h3>
+                <p style="color: #666; font-size: 12px; margin-top: 5px;">Search anything | Quick access to Google services</p>
+            </div>
+            
+            <!-- Google Search Form -->
+            <form action="https://www.google.com/search" method="GET" target="_blank">
+                <div class="google-search-bar">
+                    <span style="padding: 12px 0 12px 5px; color: #9aa0a6;">🔍</span>
+                    <input type="text" name="q" placeholder="Google Search or type a URL..." autocomplete="off">
+                    <button type="submit">Search</button>
+                </div>
+            </form>
+            
+            <!-- Google Services Quick Links -->
+            <div class="google-services">
+                <a href="https://www.google.com" target="_blank" class="google-service-link">
+                    🔍 Google
+                </a>
+                <a href="https://mail.google.com" target="_blank" class="google-service-link">
+                    📧 Gmail
+                </a>
+                <a href="https://maps.google.com" target="_blank" class="google-service-link">
+                    🗺️ Maps
+                </a>
+                <a href="https://youtube.com" target="_blank" class="google-service-link">
+                    ▶️ YouTube
+                </a>
+                <a href="https://drive.google.com" target="_blank" class="google-service-link">
+                    📁 Drive
+                </a>
+                <a href="https://photos.google.com" target="_blank" class="google-service-link">
+                    🖼️ Photos
+                </a>
+                <a href="https://calendar.google.com" target="_blank" class="google-service-link">
+                    📅 Calendar
+                </a>
+                <a href="https://translate.google.com" target="_blank" class="google-service-link">
+                    🌐 Translate
+                </a>
+                <a href="https://news.google.com" target="_blank" class="google-service-link">
+                    📰 News
+                </a>
+                <a href="https://keep.google.com" target="_blank" class="google-service-link">
+                    📝 Keep
+                </a>
+            </div>
+        </div>
+        
+        <!-- Divider -->
+        <hr class="divider">
+        
+        <!-- RECHARGE SECTION - EXISTING -->
+        <div class="recharge-card">
+            <div class="recharge-header">
+                <h2><i class="fas fa-mobile-alt"></i> Mobile Recharge</h2>
+                <p>Prepaid & Postpaid Recharge</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('payment.recharge') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="form-group">
+                    <label><i class="fas fa-phone"></i> Mobile Number</label>
+                    <input type="tel" name="mobile" pattern="[6-9][0-9]{9}" placeholder="Enter 10-digit mobile number" required>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-tower-cell"></i> Select Operator</label>
+                    <select name="operator" id="operator" required>
+                        <option value="">-- Select Operator --</option>
+                        <option value="Jio">📱 Jio</option>
+                        <option value="Airtel">📱 Airtel</option>
+                        <option value="Vi">📱 Vi (Vodafone Idea)</option>
+                        <option value="BSNL">📱 BSNL</option>
+                        <option value="MTNL">📱 MTNL</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-tag"></i> Recharge Type</label>
+                    <select name="type" required>
+                        <option value="prepaid">Prepaid</option>
+                        <option value="postpaid">Postpaid</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-rupee-sign"></i> Amount (₹)</label>
+                    <input type="number" name="amount" min="10" step="10" placeholder="Enter amount" required>
+                </div>
+
+                <!-- Quick Operator Selection -->
+                <div class="operator-grid">
+                    <button type="button" class="operator-btn" onclick="selectOperator('Jio')">📱 Jio</button>
+                    <button type="button" class="operator-btn" onclick="selectOperator('Airtel')">📱 Airtel</button>
+                    <button type="button" class="operator-btn" onclick="selectOperator('Vi')">📱 Vi</button>
+                    <button type="button" class="operator-btn" onclick="selectOperator('BSNL')">📱 BSNL</button>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-bolt"></i> Recharge Now
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    function selectOperator(op) {
+        document.getElementById('operator').value = op;
+        
+        // Remove selected class from all buttons
+        document.querySelectorAll('.operator-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        
+        // Add selected class to clicked button
+        event.target.classList.add('selected');
+    }
+</script>
+{% endblock %}

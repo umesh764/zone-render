@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+
+{% block title %}भारत दर्शन - विविधता में एकता{% endblock %}
+
+{% block content %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, #FF9933 0%, #FFFFFF 50%, #138808 100%);
+        padding: 80px 0;
+        text-align: center;
+        color: #000;
+        margin-bottom: 40px;
+    }
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+    .hero-subtitle {
+        font-size: 1.5rem;
+        margin-top: 20px;
+        font-style: italic;
+    }
+    .section-title {
+        color: #FF9933;
+        font-weight: bold;
+        margin-bottom: 30px;
+        border-bottom: 3px solid #138808;
+        padding-bottom: 10px;
+        display: inline-block;
+    }
+    .state-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s;
+        margin-bottom: 25px;
+        height: 100%;
+        cursor: pointer;
+        border: 1px solid #e0e0e0;
+    }
+    .state-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(255,153,51,0.2);
+        border-color: #FF9933;
+    }
+    .state-img {
+        height: 180px;
+        object-fit: cover;
+        width: 100%;
+    }
+    .state-body {
+        padding: 15px;
+        text-align: center;
+    }
+    .state-name {
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #333;
+    }
+    .state-capital {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+    }
+    .youtube-btn {
+        background: #FF0000;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        transition: all 0.3s;
+        display: inline-block;
+        text-decoration: none;
+        margin-top: 10px;
+    }
+    .youtube-btn:hover {
+        background: #CC0000;
+        transform: scale(1.05);
+        color: white;
+        text-decoration: none;
+    }
+    .category-badge {
+        background: #FF9933;
+        color: white;
+        padding: 3px 12px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        display: inline-block;
+        margin: 2px;
+    }
+    .featured-site {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .featured-site img {
+        height: 300px;
+        object-fit: cover;
+        width: 100%;
+    }
+    .featured-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0,0,0,0.9));
+        color: white;
+        padding: 30px 20px 20px;
+    }
+</style>
+
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="container">
+        <h1 class="hero-title">🇮🇳 भारत दर्शन 🇮🇳</h1>
+        <p class="hero-subtitle">"विविधता में एकता" - Incredible India</p>
+        <p class="lead mt-4">खोजें भारत की समृद्ध संस्कृति, ऐतिहासिक धरोहर, और प्राकृतिक सौंदर्य</p>
+        <div class="mt-4">
+            <a href="#states" class="btn btn-dark btn-lg mx-2">राज्य देखें</a>
+            <a href="#featured" class="btn btn-outline-dark btn-lg mx-2">विशेष स्थल</a>
+        </div>
+    </div>
+</div>
+
+<!-- States Grid -->
+<div class="container my-5" id="states">
+    <h2 class="section-title">भारत के राज्य (States of India)</h2>
+    
+    <div class="row">
+        <!-- उत्तर प्रदेश -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="state-card" onclick="window.location='/bharat/state/uttar-pradesh'">
+                <img src="https://images.unsplash.com/photo-1564507592333-c60657eea523?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" class="state-img" alt="UP">
+                <div class="state-body">
+                    <h3 class="state-name">उत्तर प्रदेश</h3>
+                    <p class="state-capital">राजधानी: लखनऊ</p>
+                    <span class="category-badge">ताज महल</span>
+                    <span class="category-badge">वाराणसी</span>
+                    <div>
+                        <a href="https://www.youtube.com/results?search_query=uttar+pradesh+tourism+hindi" target="_blank" class="youtube-btn" onclick="event.stopPropagation()">
+                            <i class="fab fa-youtube"></i> देखें
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- राजस्थान -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="state-card" onclick="window.location='/bharat/state/rajasthan'">
+                <img src="https://images.unsplash.com/photo-1477587458883-47145ed94245?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" class="state-img" alt="Rajasthan">
+                <div class="state-body">
+                    <h3 class="state-name">राजस्थान</h3>
+                    <p class="state-capital">राजधानी: जयपुर</p>
+                    <span class="category-badge">हवा महल</span>
+                    <span class="category-badge">जयपुर</span>
+                    <div>
+                        <a href="https://www.youtube.com/results?search_query=rajasthan+tourism+hindi" target="_blank" class="youtube-btn" onclick="event.stopPropagation()">
+                            <i class="fab fa-youtube"></i> देखें
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- केरल -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="state-card" onclick="window.location='/bharat/state/kerala'">
+                <img src="https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" class="state-img" alt="Kerala">
+                <div class="state-body">
+                    <h3 class="state-name">केरल</h3>
+                    <p class="state-capital">राजधानी: तिरुवनंतपुरम</p>
+                    <span class="category-badge">बैकवाटर</span>
+                    <span class="category-badge">हाउसबोट</span>
+                    <div>
+                        <a href="https://www.youtube.com/results?search_query=kerala+tourism+hindi" target="_blank" class="youtube-btn" onclick="event.stopPropagation()">
+                            <i class="fab fa-youtube"></i> देखें
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- गुजरात -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="state-card" onclick="window.location='/bharat/state/gujarat'">
+                <img src="https://images.unsplash.com/photo-1589652717521-10c0d9aed7c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" class="state-img" alt="Gujarat">
+                <div class="state-body">
+                    <h3 class="state-name">गुजरात</h3>
+                    <p class="state-capital">राजधानी: गांधीनगर</p>
+                    <span class="category-badge">स्टैच्यू ऑफ यूनिटी</span>
+                    <span class="category-badge">गिर</span>
+                    <div>
+                        <a href="https://www.youtube.com/results?search_query=gujarat+tourism+hindi" target="_blank" class="youtube-btn" onclick="event.stopPropagation()">
+                            <i class="fab fa-youtube"></i> देखें
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- महाराष्ट्र -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="state-card" onclick="window.location='/bharat/state/maharashtra'">
+                <img src="https://images.unsplash.com/photo-1570168007204-dfb528c6958f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" class="state-img" alt="Maharashtra">
+                <div class="state-body">
+                    <h3 class="state-name">महाराष्ट्र</h3>
+                    <p class="state-capital">राजधानी: मुंबई</p>
+                    <span class="category-badge">अजंता-एलोरा</span>
+                    <span class="category-badge">गेटवे ऑफ इंडिया</span>
+                    <div>
+                        <a href="https://www.youtube.com/results?search_query=maharashtra+tourism+hindi" target="_blank" class="youtube-btn" onclick="event.stopPropagation()">
+                            <i class="fab fa-youtube"></i> देखें
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- तमिलनाडु -->
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="state-card" onclick="window.location='/bharat/state/tamil-nadu'">
+                <img src="https://images.unsplash.com/photo-1607936856100-0e9c5d3c6b1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80" class="state-img" alt="Tamil Nadu">
+                <div class="state-body">
+                    <h3 class="state-name">तमिलनाडु</h3>
+                    <p class="state-capital">राजधानी: चेन्नई</p>
+                    <span class="category-badge">महाबलीपुरम</span>
+                    <span class="category-badge">मीनाक्षी मंदिर</span>
+                    <div>
+                        <a href="https://www.youtube.com/results?search_query=tamil+nadu+tourism+hindi" target="_blank" class="youtube-btn" onclick="event.stopPropagation()">
+                            <i class="fab fa-youtube"></i> देखें
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Sites with YouTube -->
+<div class="container my-5" id="featured">
+    <h2 class="section-title">विशेष धरोहर स्थल</h2>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <div class="featured-site">
+                <img src="https://images.unsplash.com/photo-1564507592333-c60657eea523?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Taj Mahal">
+                <div class="featured-overlay">
+                    <h3>ताज महल, आगरा</h3>
+                    <p>प्रेम का प्रतीक - विश्व के सात अजूबों में से एक</p>
+                    <a href="https://www.youtube.com/results?search_query=taj+mahal+history+hindi" target="_blank" class="youtube-btn">
+                        <i class="fab fa-youtube"></i> वीडियो देखें
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="featured-site">
+                <img src="https://images.unsplash.com/photo-1599661046827-dacff0c0f09a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Qutub Minar">
+                <div class="featured-overlay">
+                    <h3>कुतुब मीनार, दिल्ली</h3>
+                    <p>विश्व की सबसे ऊंची ईंट की मीनार</p>
+                    <a href="https://www.youtube.com/results?search_query=qutub+minar+history+hindi" target="_blank" class="youtube-btn">
+                        <i class="fab fa-youtube"></i> वीडियो देखें
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Section -->
+<div class="container my-5 text-center">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h3>अपनी पसंदीदा जगह खोजें</h3>
+            <form action="/bharat/search" method="get" class="mt-3">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control form-control-lg" placeholder="राज्य या शहर का नाम...">
+                    <button class="btn btn-warning btn-lg" type="submit">खोजें</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Font Awesome for YouTube icon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+{% endblock %}block %}

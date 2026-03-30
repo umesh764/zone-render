@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+
+{% block title %}Companies Dashboard - सभी कंपनियां{% endblock %}
+
+{% block content %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #FF9933, #138808);
+        padding: 40px 0;
+        text-align: center;
+        color: white;
+        margin-bottom: 30px;
+    }
+    
+    .search-section {
+        max-width: 600px;
+        margin: -20px auto 30px;
+        padding: 0 20px;
+    }
+    .search-box {
+        background: white;
+        border-radius: 50px;
+        padding: 5px 15px;
+        display: flex;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    .search-box input {
+        flex: 1;
+        padding: 12px 20px;
+        border: none;
+        outline: none;
+        border-radius: 50px;
+        font-size: 1rem;
+    }
+    .search-box button {
+        background: #FF9933;
+        border: none;
+        padding: 8px 25px;
+        border-radius: 40px;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    
+    .sector-tabs {
+        max-width: 1200px;
+        margin: 0 auto 30px;
+        padding: 0 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+    }
+    .sector-btn {
+        padding: 8px 18px;
+        border: 1px solid #FF9933;
+        background: white;
+        border-radius: 25px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    .sector-btn.active, .sector-btn:hover {
+        background: #FF9933;
+        color: white;
+    }
+    
+    .stats-bar {
+        max-width: 1200px;
+        margin: 0 auto 20px;
+        padding: 15px 20px;
+        background: #f8f9fa;
+        border-radius: 15px;
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    .stat-card {
+        text-align: center;
+        flex: 1;
+        min-width: 80px;
+    }
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #FF9933;
+    }
+    
+    .companies-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    .company-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+        cursor: pointer;
+        border: 1px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    .company-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(255,153,51,0.2);
+        border-color: #FF9933;
+    }
+    .company-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(135deg, #FF9933, #FF6B35);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+    }
+    .company-info {
+        flex: 1;
+    }
+    .company-name {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    .company-sector {
+        font-size: 0.7rem;
+        color: #FF9933;
+        background: #fff3e0;
+        padding: 2px 10px;
+        border-radius: 15px;
+        display: inline-block;
+    }
+    .company-type {
+        font-size: 0.7rem;
+        color: #138808;
+        margin-left: 5px;
+    }
+    .company-desc {
+        font-size: 0.75rem;
+        color: #666;
+        margin-top: 5px;
+    }
+    
+    @media (max-width: 768px) {
+        .companies-grid {
+            grid-template-columns: 1fr;
+        }
+        .sector-btn {
+            padding: 5px 12px;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+
+<div class="dashboard-header">
+    <div class="container">
+        <h1>🏢 कंपनी डैशबोर्ड</h1>
+        <p>Steel | Auto | IT | Banking | Defence | Pharma | Energy | FMCG | Telecom</p>
+    </div>
+</div>
+
+<div class="search-section">
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 कंपनी सर्च करें... (Tata, Reliance, JSW, Infosys, SBI, DRDO)">
+        <button onclick="searchCompany()">खोजें</button>
+    </div>
+</div>
+
+<div class="sector-tabs" id="sectorTabs">
+    <button class="sector-btn active" onclick="filterSector('all')">📌 सभी</button>
+    <button class="sector-btn" onclick="filterSector('steel')">🏭 स्टील & मेटल</button>
+    <button class="sector-btn" onclick="filterSector('auto')">🚗 ऑटोमोबाइल</button>
+    <button class="sector-btn" onclick="filterSector('it')">💻 आईटी & सॉफ्टवेयर</button>
+    <button class="sector-btn" onclick="filterSector('banking')">🏦 बैंकिंग & वित्त</button>
+    <button class="sector-btn" onclick="filterSector('defence')">🛡️ रक्षा & एयरोस्पेस</button>
+    <button class="sector-btn" onclick="filterSector('pharma')">💊 फार्मा & हेल्थकेयर</button>
+    <button class="sector-btn" onclick="filterSector('energy')">⚡ एनर्जी & पावर</button>
+    <button class="sector-btn" onclick="filterSector('fmcg')">🍱 एफएमसीजी</button>
+    <button class="sector-btn" onclick="filterSector('telecom')">📱 टेलीकॉम</button>
+    <button class="sector-btn" onclick="filterSector('oilgas')">🛢️ ऑयल & गैस</button>
+    <button class="sector-btn" onclick="filterSector('infra')">🏗️ इंफ्रा & सीमेंट</button>
+</div>
+
+<div class="stats-bar" id="statsBar">
+    <div class="stat-card"><div class="stat-number" id="totalCount">0</div><div>कुल कंपनियां</div></div>
+    <div class="stat-card"><div class="stat-number" id="pvtCount">0</div><div>प्राइवेट</div></div>
+    <div class="stat-card"><div class="stat-number" id="govtCount">0</div><div>सरकारी/PSU</div></div>
+    <div class="stat-card"><div class="stat-number" id="listedCount">0</div><div>लिस्टेड (NSE/BSE)</div></div>
+</div>
+
+<div class="companies-grid" id="companiesGrid"></div>
+
+<script>
+    const companies = [
+        // ========== STEEL & METAL ==========
+        { name: "Tata Steel", sector: "steel", type: "प्राइवेट", listed: "✅", desc: "भारत की सबसे बड़ी स्टील कंपनी", url: "https://www.tatasteel.com", icon: "🏭", keywords: ["tata", "steel", "टाटा"] },
+        { name: "JSW Steel", sector: "steel", type: "प्राइवेट", listed: "✅", desc: "दूसरी सबसे बड़ी स्टील निर्माता", url: "https://www.jswsteel.in", icon: "🏭", keywords: ["jsw"] },
+        { name: "SAIL", sector: "steel", type: "सरकारी (PSU)", listed: "✅", desc: "सरकारी स्टील कंपनी", url: "https://www.sail.co.in", icon: "🏭", keywords: ["sail", "सेल"] },
+        { name: "Jindal Steel", sector: "steel", type: "प्राइवेट", listed: "✅", desc: "जिंदल ग्रुप की स्टील कंपनी", url: "https://www.jindalsteelpower.com", icon: "🏭", keywords: ["jindal"] },
+        { name: "Hindalco", sector: "steel", type: "प्राइवेट", listed: "✅", desc: "एल्युमीनियम उत्पादन", url: "https://www.hindalco.com", icon: "🔩", keywords: ["hindalco"] },
+        { name: "Vedanta", sector: "steel", type: "प्राइवेट", listed: "✅", desc: "धातु, तेल, गैस", url: "https://www.vedantaresources.com", icon: "⛏️", keywords: ["vedanta"] },
+        { name: "NMDC", sector: "steel", type: "सरकारी (PSU)", listed: "✅", desc: "लौह अयस्क उत्पादक", url: "https://www.nmdc.co.in", icon: "⛏️", keywords: ["nmdc"] },
+        
+        // ========== AUTOMOBILE ==========
+        { name: "Tata Motors", sector: "auto", type: "प्राइवेट", listed: "✅", desc: "टाटा कार, ट्रक, बस", url: "https://www.tatamotors.com", icon: "🚗", keywords: ["tata"] },
+        { name: "Mahindra & Mahindra", sector: "auto", type: "प्राइवेट", listed: "✅", desc: "SUV, ट्रैक्टर, EV", url: "https://www.mahindra.com", icon: "🚜", keywords: ["mahindra"] },
+        { name: "Maruti Suzuki", sector: "auto", type: "प्राइवेट", listed: "✅", desc: "भारत की सबसे बड़ी कार निर्माता", url: "https://www.marutisuzuki.com", icon: "🚙", keywords: ["maruti"] },
+        { name: "Bajaj Auto", sector: "auto", type: "प्राइवेट", listed: "✅", desc: "मोटरसाइकिल, ऑटोरिक्शा", url: "https://www.bajajauto.com", icon: "🏍️", keywords: ["bajaj"] },
+        { name: "Hero MotoCorp", sector: "auto", type: "प्राइवेट", listed: "✅", desc: "दुनिया की सबसे बड़ी दोपहिया कंपनी", url: "https://www.heromotocorp.com", icon: "🏍️", keywords: ["hero"] },
+        
+        // ========== IT & SOFTWARE ==========
+        { name: "TCS", sector: "it", type: "प्राइवेट", listed: "✅", desc: "भारत की सबसे बड़ी IT कंपनी", url: "https://www.tcs.com", icon: "💻", keywords: ["tcs"] },
+        { name: "Infosys", sector: "it", type: "प्राइवेट", listed: "✅", desc: "दूसरी सबसे बड़ी IT कंपनी", url: "https://www.infosys.com", icon: "💻", keywords: ["infosys"] },
+        { name: "Wipro", sector: "it", type: "प्राइवेट", listed: "✅", desc: "IT सर्विसेज और कंसल्टिंग", url: "https://www.wipro.com", icon: "💻", keywords: ["wipro"] },
+        { name: "HCL Technologies", sector: "it", type: "प्राइवेट", listed: "✅", desc: "IT सर्विसेज", url: "https://www.hcltech.com", icon: "💻", keywords: ["hcl"] },
+        { name: "Tech Mahindra", sector: "it", type: "प्राइवेट", listed: "✅", desc: "IT और टेलीकॉम सर्विसेज", url: "https://www.techmahindra.com", icon: "💻", keywords: ["tech mahindra"] },
+        
+        // ========== BANKING & FINANCE ==========
+        { name: "SBI", sector: "banking", type: "सरकारी", listed: "✅", desc: "भारत की सबसे बड़ी बैंक", url: "https://www.sbi.co.in", icon: "🏦", keywords: ["sbi"] },
+        { name: "HDFC Bank", sector: "banking", type: "प्राइवेट", listed: "✅", desc: "सबसे बड़ा प्राइवेट बैंक", url: "https://www.hdfcbank.com", icon: "🏦", keywords: ["hdfc"] },
+        { name: "ICICI Bank", sector: "banking", type: "प्राइवेट", listed: "✅", desc: "प्राइवेट सेक्टर बैंक", url: "https://www.icicibank.com", icon: "🏦", keywords: ["icici"] },
+        { name: "Axis Bank", sector: "banking", type: "प्राइवेट", listed: "✅", desc: "प्राइवेट सेक्टर बैंक", url: "https://www.axisbank.com", icon: "🏦", keywords: ["axis"] },
+        { name: "Kotak Mahindra Bank", sector: "banking", type: "प्राइवेट", listed: "✅", desc: "प्राइवेट बैंक", url: "https://www.kotak.com", icon: "🏦", keywords: ["kotak"] },
+        
+        // ========== DEFENCE & AEROSPACE ==========
+        { name: "DRDO", sector: "defence", type: "सरकारी", listed: "❌", desc: "रक्षा अनुसंधान एवं विकास संगठन", url: "https://www.drdo.gov.in", icon: "🛡️", keywords: ["drdo"] },
+        { name: "ISRO", sector: "defence", type: "सरकारी", listed: "❌", desc: "भारतीय अंतरिक्ष अनुसंधान संगठन", url: "https://www.isro.gov.in", icon: "🚀", keywords: ["isro"] },
+        { name: "BEL", sector: "defence", type: "सरकारी (PSU)", listed: "✅", desc: "भारत इलेक्ट्रॉनिक्स लिमिटेड", url: "https://www.bel-india.in", icon: "📡", keywords: ["bel"] },
+        { name: "HAL", sector: "defence", type: "सरकारी (PSU)", listed: "✅", desc: "हिंदुस्तान एयरोनॉटिक्स लिमिटेड", url: "https://www.hal-india.co.in", icon: "✈️", keywords: ["hal"] },
+        { name: "Mazagon Dock", sector: "defence", type: "सरकारी (PSU)", listed: "✅", desc: "जहाज निर्माण कंपनी", url: "https://www.mazagondock.in", icon: "🚢", keywords: ["mazagon"] },
+        { name: "Bharat Dynamics", sector: "defence", type: "सरकारी (PSU)", listed: "✅", desc: "मिसाइल सिस्टम निर्माता", url: "https://www.bdl-india.in", icon: "🎯", keywords: ["bdl"] },
+        
+        // ========== PHARMA & HEALTHCARE ==========
+        { name: "Sun Pharma", sector: "pharma", type: "प्राइवेट", listed: "✅", desc: "भारत की सबसे बड़ी फार्मा कंपनी", url: "https://www.sunpharma.com", icon: "💊", keywords: ["sun"] },
+        { name: "Dr. Reddy's", sector: "pharma", type: "प्राइवेट", listed: "✅", desc: "फार्मास्युटिकल कंपनी", url: "https://www.drreddys.com", icon: "💊", keywords: ["reddy"] },
+        { name: "Cipla", sector: "pharma", type: "प्राइवेट", listed: "✅", desc: "फार्मास्युटिकल कंपनी", url: "https://www.cipla.com", icon: "💊", keywords: ["cipla"] },
+        
+        // ========== ENERGY & POWER ==========
+        { name: "NTPC", sector: "energy", type: "सरकारी (PSU)", listed: "✅", desc: "भारत की सबसे बड़ी पावर कंपनी", url: "https://www.ntpc.co.in", icon: "⚡", keywords: ["ntpc"] },
+        { name: "PowerGrid", sector: "energy", type: "सरकारी (PSU)", listed: "✅", desc: "बिजली ट्रांसमिशन", url: "https://www.powergridindia.com", icon: "⚡", keywords: ["powergrid"] },
+        { name: "Adani Green", sector: "energy", type: "प्राइवेट", listed: "✅", desc: "नवीकरणीय ऊर्जा", url: "https://www.adanigreenenergy.com", icon: "☀️", keywords: ["adani"] },
+        { name: "Tata Power", sector: "energy", type: "प्राइवेट", listed: "✅", desc: "बिजली उत्पादन", url: "https://www.tatapower.com", icon: "⚡", keywords: ["tata"] },
+        
+        // ========== FMCG ==========
+        { name: "Hindustan Unilever", sector: "fmcg", type: "प्राइवेट", listed: "✅", desc: "हल, डिटर्जेंट, फूड", url: "https://www.hul.co.in", icon: "🍱", keywords: ["hul"] },
+        { name: "ITC", sector: "fmcg", type: "प्राइवेट", listed: "✅", desc: "फूड, होटल, सिगरेट", url: "https://www.itcportal.com", icon: "🍱", keywords: ["itc"] },
+        { name: "Nestle India", sector: "fmcg", type: "प्राइवेट", listed: "✅", desc: "मैगी, नेस्ले प्रोडक्ट्स", url: "https://www.nestle.in", icon: "🍫", keywords: ["nestle"] },
+        { name: "Britannia", sector: "fmcg", type: "प्राइवेट", listed: "✅", desc: "बिस्कुट, डेयरी", url: "https://www.britannia.co.in", icon: "🍪", keywords: ["britannia"] },
+        
+        // ========== TELECOM ==========
+        { name: "Reliance Jio", sector: "telecom", type: "प्राइवेट", listed: "✅", desc: "देश की सबसे बड़ी टेलीकॉम कंपनी", url: "https://www.jio.com", icon: "📱", keywords: ["jio"] },
+        { name: "Airtel", sector: "telecom", type: "प्राइवेट", listed: "✅", desc: "टेलीकॉम सर्विसेज", url: "https://www.airtel.in", icon: "📱", keywords: ["airtel"] },
+        { name: "BSNL", sector: "telecom", type: "सरकारी", listed: "❌", desc: "सरकारी टेलीकॉम कंपनी", url: "https://www.bsnl.co.in", icon: "📱", keywords: ["bsnl"] },
+        
+        // ========== OIL & GAS ==========
+        { name: "ONGC", sector: "oilgas", type: "सरकारी (PSU)", listed: "✅", desc: "तेल और गैस उत्पादक", url: "https://www.ongcindia.com", icon: "🛢️", keywords: ["ongc"] },
+        { name: "Reliance Industries", sector: "oilgas", type: "प्राइवेट", listed: "✅", desc: "पेट्रोलियम, पेट्रोकेमिकल्स", url: "https://www.ril.com", icon: "🛢️", keywords: ["reliance"] },
+        { name: "BPCL", sector: "oilgas", type: "सरकारी (PSU)", listed: "✅", desc: "पेट्रोलियम कंपनी", url: "https://www.bharatpetroleum.in", icon: "⛽", keywords: ["bpcl"] },
+        { name: "IOCL", sector: "oilgas", type: "सरकारी (PSU)", listed: "✅", desc: "इंडियन ऑयल कॉर्पोरेशन", url: "https://www.iocl.com", icon: "⛽", keywords: ["iocl"] },
+        
+        // ========== INFRA & CEMENT ==========
+        { name: "Larsen & Toubro", sector: "infra", type: "प्राइवेट", listed: "✅", desc: "इंफ्रास्ट्रक्चर कंपनी", url: "https://www.larsentoubro.com", icon: "🏗️", keywords: ["l&t"] },
+        { name: "UltraTech Cement", sector: "infra", type: "प्राइवेट", listed: "✅", desc: "सीमेंट निर्माता", url: "https://www.ultratechcement.com", icon: "🏗️", keywords: ["ultratech"] },
+        { name: "Ambuja Cements", sector: "infra", type: "प्राइवेट", listed: "✅", desc: "सीमेंट निर्माता", url: "https://www.ambujacement.com", icon: "🏗️", keywords: ["ambuja"] }
+    ];
+
+    let currentSector = 'all';
+    let currentSearch = '';
+
+    function updateStats(displayedCompanies) {
+        const total = displayedCompanies.length;
+        const pvt = displayedCompanies.filter(c => c.type.includes('प्राइवेट')).length;
+        const govt = displayedCompanies.filter(c => c.type.includes('सरकारी')).length;
+        const listed = displayedCompanies.filter(c => c.listed === '✅').length;
+        
+        document.getElementById('totalCount').innerHTML = total;
+        document.getElementById('pvtCount').innerHTML = pvt;
+        document.getElementById('govtCount').innerHTML = govt;
+        document.getElementById('listedCount').innerHTML = listed;
+    }
+
+    function displayCompanies(companiesList) {
+        const grid = document.getElementById('companiesGrid');
+        let html = '';
+        
+        companiesList.forEach(comp => {
+            html += `
+                <div class="company-card" onclick="window.open('${comp.url}', '_blank')">
+                    <div class="company-icon">${comp.icon}</div>
+                    <div class="company-info">
+                        <div class="company-name">${comp.name}</div>
+                        <div>
+                            <span class="company-sector">${comp.sector === 'steel' ? '🏭 स्टील' : comp.sector === 'auto' ? '🚗 ऑटो' : comp.sector === 'it' ? '💻 आईटी' : comp.sector === 'banking' ? '🏦 बैंक' : comp.sector === 'defence' ? '🛡️ रक्षा' : comp.sector === 'pharma' ? '💊 फार्मा' : comp.sector === 'energy' ? '⚡ एनर्जी' : comp.sector === 'fmcg' ? '🍱 एफएमसीजी' : comp.sector === 'telecom' ? '📱 टेलीकॉम' : comp.sector === 'oilgas' ? '🛢️ ऑयल' : '🏗️ इंफ्रा'}</span>
+                            <span class="company-type">${comp.type} ${comp.listed === '✅' ? '(लिस्टेड)' : ''}</span>
+                        </div>
+                        <div class="company-desc">${comp.desc}</div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        grid.innerHTML = html;
+        updateStats(companiesList);
+    }
+
+    function filterSector(sector) {
+        currentSector = sector;
+        currentSearch = '';
+        document.getElementById('searchInput').value = '';
+        
+        // Update active button
+        document.querySelectorAll('.sector-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        event.target.classList.add('active');
+        
+        let filtered = companies;
+        if (sector !== 'all') {
+            filtered = companies.filter(c => c.sector === sector);
+        }
+        
+        displayCompanies(filtered);
+    }
+
+    function searchCompany() {
+        const query = document.getElementById('searchInput').value.toLowerCase().trim();
+        currentSearch = query;
+        
+        if (query === '') {
+            filterSector(currentSector);
+            return;
+        }
+        
+        let filtered = companies;
+        if (currentSector !== 'all') {
+            filtered = filtered.filter(c => c.sector === currentSector);
+        }
+        
+        filtered = filtered.filter(c => 
+            c.name.toLowerCase().includes(query) ||
+            c.desc.toLowerCase().includes(query) ||
+            c.keywords.some(k => k.toLowerCase().includes(query))
+        );
+        
+        displayCompanies(filtered);
+        
+        if (filtered.length === 0) {
+            document.getElementById('companiesGrid').innerHTML = '<div style="text-align: center; padding: 50px; grid-column: 1/-1;">❌ कोई कंपनी नहीं मिली। कृपया दूसरा शब्द सर्च करें।</div>';
+        }
+    }
+
+    // Initial load
+    displayCompanies(companies);
+</script>
+{% endblock %}

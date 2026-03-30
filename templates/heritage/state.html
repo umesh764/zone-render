@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}{{ state }} के धरोहर स्थल - भारत दर्शन{% endblock %}
+
+{% block content %}
+<style>
+    .state-header {
+        background: linear-gradient(135deg, #4B0082, #FF9933);
+        padding: 3rem 2rem;
+        text-align: center;
+        color: white;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 2rem;
+    }
+
+    .heritage-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .heritage-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: 0.3s;
+        border: 2px solid transparent;
+    }
+
+    .heritage-card:hover {
+        transform: translateY(-5px);
+        border-color: #4B0082;
+        box-shadow: 0 20px 40px rgba(75,0,130,0.3);
+    }
+
+    .card-image {
+        height: 180px;
+        background: linear-gradient(135deg, #4B0082, #FF9933);
+        position: relative;
+    }
+
+    .card-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: #FFD700;
+        color: #333;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+
+    .card-content {
+        padding: 1.5rem;
+    }
+
+    .card-title {
+        font-size: 1.3rem;
+        color: #4B0082;
+        margin-bottom: 0.5rem;
+    }
+
+    .card-meta {
+        display: flex;
+        gap: 1rem;
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin: 2rem;
+    }
+
+    .page-btn {
+        padding: 0.5rem 1rem;
+        background: white;
+        border: 2px solid #4B0082;
+        color: #4B0082;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+
+    .page-btn:hover {
+        background: #4B0082;
+        color: white;
+    }
+</style>
+
+<div class="state-header">
+    <h1>🗺️ {{ state }}</h1>
+    <p>{{ sites.total }} धरोहर स्थल</p>
+</div>
+
+<div class="heritage-grid">
+    {% for site in sites.items %}
+    <div class="heritage-card" onclick="window.location.href='/heritage/site/{{ site.id }}'">
+        <div class="card-image">
+            <span class="card-badge">{{ site.category }}</span>
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">{{ site.name }}</h3>
+            <div class="card-meta">
+                <span>📍 {{ site.district or site.state }}</span>
+                <span>🏛️ {{ site.built_year or 'प्राचीन' }}</span>
+            </div>
+            <p>{{ site.description[:100] }}{% if site.description|length > 100 %}...{% endif %}</p>
+        </div>
+    </div>
+    {% else %}
+    <div style="text-align: center; grid-column: 1/-1;">
+        <h3>इस राज्य में अभी कोई स्थल नहीं जोड़ा गया</h3>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    {% if sites.has_prev %}
+    <a href="{{ url_for('heritage.state_view', state_name=state, page=sites.prev_num) }}" class="page-btn">← पिछला</a>
+    {% endif %}
+    
+    {% for page_num in sites.iter_pages() %}
+        {% if page_num %}
+            {% if page_num == sites.page %}
+            <span class="page-btn" style="background:#4B0082; color:white;">{{ page_num }}</span>
+            {% else %}
+            <a href="{{ url_for('heritage.state_view', state_name=state, page=page_num) }}" class="page-btn">{{ page_num }}</a>
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+    
+    {% if sites.has_next %}
+    <a href="{{ url_for('heritage.state_view', state_name=state, page=sites.next_num) }}" class="page-btn">अगला →</a>
+    {% endif %}
+</div>
+{% endblock %}

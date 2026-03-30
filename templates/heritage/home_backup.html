@@ -1,0 +1,608 @@
+{% extends "base.html" %}
+
+{% block title %}भारत दर्शन - धरोहर और संस्कृति{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --saffron: #FF9933;
+        --green: #138808;
+        --saffron-dark: #E67E22;
+        --maroon: #B94A2E;
+        --gold: #FFD700;
+        --indigo: #4B0082;
+        --sand: #F4E1C1;
+        --temple-red: #C41E3A;
+        --peacock: #008B8B;
+    }
+
+    body {
+        background: linear-gradient(135deg, #fff5e6 0%, #ffe4cc 100%);
+    }
+
+    .heritage-hero {
+        background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), 
+                    url('https://images.unsplash.com/photo-1548013146-72479768bada?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        padding: 6rem 2rem;
+        text-align: center;
+        color: white;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 3rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .heritage-hero::before {
+        content: '🕉️';
+        position: absolute;
+        left: -50px;
+        top: -50px;
+        font-size: 300px;
+        opacity: 0.1;
+        transform: rotate(-15deg);
+        color: var(--gold);
+    }
+
+    .heritage-hero::after {
+        content: '🔱';
+        position: absolute;
+        right: -50px;
+        bottom: -50px;
+        font-size: 300px;
+        opacity: 0.1;
+        transform: rotate(15deg);
+        color: var(--saffron);
+    }
+
+    .hero-title {
+        font-size: 4.5rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        text-shadow: 3px 3px 0 var(--maroon);
+        background: linear-gradient(135deg, #FF9933, #FFD700, #4B0082);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: glow 2s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+        0%, 100% { text-shadow: 3px 3px 0 var(--maroon); }
+        50% { text-shadow: 5px 5px 10px rgba(255,215,0,0.5); }
+    }
+
+    .hero-subtitle {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        color: #FFE4C4;
+    }
+
+    .search-container {
+        max-width: 700px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 10;
+    }
+
+    .search-box {
+        display: flex;
+        background: rgba(255,255,255,0.95);
+        border-radius: 60px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        border: 3px solid var(--gold);
+    }
+
+    .search-box input {
+        flex: 1;
+        padding: 1.2rem 1.5rem;
+        border: none;
+        outline: none;
+        font-size: 1.1rem;
+    }
+
+    .search-box button {
+        padding: 0 2.5rem;
+        background: linear-gradient(135deg, var(--saffron), var(--maroon));
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+        transition: 0.3s;
+        font-size: 1.1rem;
+    }
+
+    .search-box button:hover {
+        background: linear-gradient(135deg, var(--maroon), var(--saffron));
+    }
+
+    .search-results {
+        position: absolute;
+        background: white;
+        width: 100%;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        margin-top: 10px;
+        max-height: 400px;
+        overflow-y: auto;
+        display: none;
+        z-index: 1000;
+    }
+
+    .search-result-item {
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+        transition: 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .search-result-item:hover {
+        background: #f8f9fa;
+    }
+
+    .result-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .temple-icon { background: var(--temple-red); }
+    .fort-icon { background: var(--maroon); }
+    .monument-icon { background: var(--peacock); }
+
+    .section-title {
+        text-align: center;
+        margin: 3rem 0 2rem;
+        font-size: 2.5rem;
+        position: relative;
+    }
+
+    .section-title span {
+        background: linear-gradient(135deg, var(--saffron), var(--maroon));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        padding: 0 1rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .section-title::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+
+    .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1.5rem;
+        padding: 1rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .category-card {
+        background: linear-gradient(135deg, var(--saffron), var(--maroon));
+        padding: 2rem 1rem;
+        text-align: center;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 3px solid transparent;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .category-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s;
+    }
+
+    .category-card:hover::before {
+        left: 100%;
+    }
+
+    .category-card:hover {
+        transform: translateY(-10px) rotate(1deg);
+        border-color: var(--gold);
+        box-shadow: 0 15px 40px rgba(255,153,51,0.4);
+    }
+
+    .category-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+        animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+
+    .state-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .state-chip {
+        background: white;
+        padding: 1rem 1.5rem;
+        text-align: center;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.3s;
+        border: 2px solid transparent;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        font-weight: 600;
+        color: var(--indigo);
+    }
+
+    .state-chip:hover {
+        transform: scale(1.05);
+        border-color: var(--saffron);
+        background: linear-gradient(135deg, #FFE5D0, #FFF);
+        box-shadow: 0 10px 20px rgba(255,153,51,0.2);
+    }
+
+    .featured-section {
+        padding: 3rem 2rem;
+        background: linear-gradient(135deg, #FFF2E0, #FFE6D5);
+        border-radius: 50px 50px 0 0;
+    }
+
+    .heritage-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .heritage-card {
+        background: white;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        transition: all 0.4s;
+        border: 3px solid transparent;
+        cursor: pointer;
+    }
+
+    .heritage-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--gold);
+        box-shadow: 0 20px 40px rgba(255,153,51,0.3);
+    }
+
+    .card-image {
+        height: 200px;
+        background-size: cover;
+        background-position: center;
+        position: relative;
+    }
+
+    .card-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: linear-gradient(135deg, var(--saffron), var(--maroon));
+        color: white;
+        padding: 0.5rem 1.5rem;
+        border-radius: 30px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .card-content {
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #FFF, #FFF9F0);
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        color: var(--indigo);
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .card-subtitle {
+        display: flex;
+        gap: 1rem;
+        color: var(--maroon);
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .card-description {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .card-meta {
+        display: flex;
+        gap: 1rem;
+        color: #999;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .card-meta i {
+        color: var(--saffron);
+    }
+
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .explore-btn {
+        padding: 0.8rem 2rem;
+        background: linear-gradient(135deg, var(--saffron), var(--maroon));
+        color: white;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: 600;
+        transition: 0.3s;
+        border: 2px solid transparent;
+    }
+
+    .explore-btn:hover {
+        background: transparent;
+        color: var(--saffron);
+        border-color: var(--saffron);
+    }
+
+    .cultural-elements {
+        position: fixed;
+        bottom: 20px;
+        left: 20px;
+        font-size: 2rem;
+        opacity: 0.5;
+        pointer-events: none;
+        animation: rotate 10s linear infinite;
+    }
+
+    @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+
+    .rangoli-bg {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        font-size: 5rem;
+        opacity: 0.1;
+        pointer-events: none;
+        transform: rotate(-15deg);
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 30px;
+        margin: 2rem;
+    }
+
+    .no-results i {
+        font-size: 4rem;
+        color: var(--saffron);
+        margin-bottom: 1rem;
+    }
+
+    .load-more {
+        text-align: center;
+        margin: 3rem 0;
+    }
+
+    .load-more-btn {
+        padding: 1rem 4rem;
+        background: linear-gradient(135deg, var(--saffron), var(--maroon));
+        color: white;
+        border: none;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: 0.3s;
+        border: 3px solid transparent;
+    }
+
+    .load-more-btn:hover {
+        background: transparent;
+        color: var(--saffron);
+        border-color: var(--saffron);
+    }
+</style>
+
+<div class="cultural-elements">🕉️ ॐ</div>
+<div class="rangoli-bg">🪔✨🪷🎨</div>
+
+<div class="heritage-hero">
+    <h1 class="hero-title">🕉️ भारत दर्शन 🪷</h1>
+    <p class="hero-subtitle">प्राचीन मंदिर • भव्य किले • अद्भुत धरोहर • रंगीन संस्कृति</p>
+    
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" id="heritageSearch" placeholder="🔍 खोजें - ताजमहल, कुतुब मीनार, लाल किला...">
+            <button onclick="searchHeritage()">खोजें</button>
+        </div>
+        <div id="searchResults" class="search-results"></div>
+    </div>
+</div>
+
+<!-- Categories -->
+<h2 class="section-title"><span>🏛️ श्रेणियाँ</span></h2>
+<div class="category-grid">
+    <div class="category-card" onclick="filterByCategory('मंदिर')">
+        <span class="category-icon">🛕</span>
+        <h3>मंदिर</h3>
+    </div>
+    <div class="category-card" onclick="filterByCategory('किला')">
+        <span class="category-icon">🏰</span>
+        <h3>किले</h3>
+    </div>
+    <div class="category-card" onclick="filterByCategory('स्मारक')">
+        <span class="category-icon">🗿</span>
+        <h3>स्मारक</h3>
+    </div>
+    <div class="category-card" onclick="filterByCategory('गुफा')">
+        <span class="category-icon">🕳️</span>
+        <h3>गुफाएँ</h3>
+    </div>
+    <div class="category-card" onclick="filterByCategory('मस्जिद')">
+        <span class="category-icon">🕌</span>
+        <h3>मस्जिदें</h3>
+    </div>
+    <div class="category-card" onclick="filterByCategory('गुरुद्वारा')">
+        <span class="category-icon">🛐</span>
+        <h3>गुरुद्वारे</h3>
+    </div>
+    <div class="category-card" onclick="filterByCategory('चर्च')">
+        <span class="category-icon">⛪</span>
+        <h3>चर्च</h3>
+    </div>
+    <div class="category-card" onclick="filterByCategory('स्तूप')">
+        <span class="category-icon">⛩️</span>
+        <h3>स्तूप</h3>
+    </div>
+</div>
+
+<!-- States -->
+<h2 class="section-title"><span>🗺️ राज्य अनुसार</span></h2>
+<div class="state-grid">
+    <div class="state-chip" onclick="filterByState('उत्तर प्रदेश')">उत्तर प्रदेश</div>
+    <div class="state-chip" onclick="filterByState('मध्य प्रदेश')">मध्य प्रदेश</div>
+    <div class="state-chip" onclick="filterByState('राजस्थान')">राजस्थान</div>
+    <div class="state-chip" onclick="filterByState('गुजरात')">गुजरात</div>
+    <div class="state-chip" onclick="filterByState('महाराष्ट्र')">महाराष्ट्र</div>
+    <div class="state-chip" onclick="filterByState('कर्नाटक')">कर्नाटक</div>
+    <div class="state-chip" onclick="filterByState('तमिलनाडु')">तमिलनाडु</div>
+    <div class="state-chip" onclick="filterByState('केरल')">केरल</div>
+    <div class="state-chip" onclick="filterByState('उड़ीसा')">उड़ीसा</div>
+    <div class="state-chip" onclick="filterByState('बिहार')">बिहार</div>
+</div>
+
+<!-- Featured Heritage Sites -->
+<div class="featured-section">
+    <h2 class="section-title"><span>✨ प्रमुख धरोहर स्थल</span></h2>
+    <div class="heritage-grid" id="heritageGrid">
+        <div class="no-results">
+            <i class="fas fa-temple"></i>
+            <h3>अभी कोई डेटा नहीं</h3>
+            <p>जल्द ही नए स्थल जोड़े जाएंगे</p>
+        </div>
+    </div>
+</div>
+
+<!-- Load More -->
+<div class="load-more">
+    <button class="load-more-btn" onclick="loadMore()">और देखें 卐</button>
+</div>
+
+<script>
+    let currentCategory = '';
+    let currentState = '';
+    let page = 1;
+
+    function filterByCategory(category) {
+        window.location.href = '/heritage/category/' + encodeURIComponent(category);
+    }
+
+    function filterByState(state) {
+        window.location.href = '/heritage/state/' + encodeURIComponent(state);
+    }
+
+    async function searchHeritage() {
+        const query = document.getElementById('heritageSearch').value;
+        const resultsDiv = document.getElementById('searchResults');
+        
+        if (query.length < 2) {
+            resultsDiv.style.display = 'none';
+            return;
+        }
+        
+        const response = await fetch(`/heritage/search?q=${encodeURIComponent(query)}`);
+        const data = await response.json();
+        
+        resultsDiv.innerHTML = '';
+        if (data.length === 0) {
+            resultsDiv.innerHTML = '<div class="search-result-item">कोई परिणाम नहीं मिला 🕉️</div>';
+        } else {
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'search-result-item';
+                div.onclick = () => window.location.href = `/heritage/site/${item.id}`;
+                
+                let icon = '🛕';
+                if (item.category === 'किला') icon = '🏰';
+                else if (item.category === 'स्मारक') icon = '🗿';
+                
+                div.innerHTML = `
+                    <div class="result-icon ${item.category === 'मंदिर' ? 'temple-icon' : item.category === 'किला' ? 'fort-icon' : 'monument-icon'}">${icon}</div>
+                    <div>
+                        <strong>${item.name}</strong><br>
+                        <small>${item.state} | ${item.category}</small>
+                    </div>
+                `;
+                resultsDiv.appendChild(div);
+            });
+        }
+        resultsDiv.style.display = 'block';
+    }
+
+    function loadMore() {
+        page++;
+        alert('🔄 और स्थल लोड हो रहे हैं...');
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.search-container')) {
+            document.getElementById('searchResults').style.display = 'none';
+        }
+    });
+
+    document.getElementById('heritageSearch').addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') searchHeritage();
+    });
+</script>
+
+<!-- कल्चरल आइकॉन्स -->
+<div style="position: fixed; top: 10px; right: 10px; opacity: 0.2; font-size: 3rem; pointer-events: none;">
+    🪔 卐 🕉️ 🔱
+</div>
+{% endblock %}

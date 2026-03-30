@@ -1,0 +1,9 @@
+".env" 
+"__pycache__/" 
+"*.pyc" 
+"instance/" 
+"*.db" 
+".env.backup" 
+"test_*.py" 
+.env 
+.env 

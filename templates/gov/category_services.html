@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/gov">होम</a></li>
+            <li class="breadcrumb-item"><a href="/gov/services">सभी सेवाएं</a></li>
+            <li class="breadcrumb-item active">{{ category }}</li>
+        </ol>
+    </nav>
+    
+    <h1>{{ category }} सेवाएं</h1>
+    
+    <div class="row mt-4">
+        {% for service in services %}
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5>{{ service.name }}</h5>
+                    <p class="text-muted">{{ service.data.description }}</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-secondary">{{ service.data.type }}</span>
+                        <a href="/gov/service/{{ service.name }}" class="btn btn-sm btn-primary">
+                            विवरण देखें
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="mt-4">
+        <a href="/gov/services" class="btn btn-secondary">← सभी सेवाओं पर वापस</a>
+    </div>
+</div>
+{% endblock %}

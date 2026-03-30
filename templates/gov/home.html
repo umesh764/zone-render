@@ -1,0 +1,478 @@
+{% extends 'base.html' %}
+
+{% block title %}गवर्नमेंट डैशबोर्ड - HAT PAY{% endblock %}
+
+{% block content %}
+<style>
+    .hero-gov {
+        background: linear-gradient(135deg, #FF9933, #FFFFFF, #138808);
+        padding: 40px 0;
+        text-align: center;
+        margin-bottom: 30px;
+        border-radius: 0 0 50px 50px;
+    }
+    .hero-gov h1 {
+        font-size: 2.2rem;
+        font-weight: bold;
+    }
+    .hero-gov p {
+        font-size: 1rem;
+    }
+    
+    /* Back Button */
+    .back-home {
+        max-width: 1200px;
+        margin: 0 auto 20px;
+        padding: 0 20px;
+    }
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #f8f9fa;
+        padding: 8px 20px;
+        border-radius: 40px;
+        color: #FF9933;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s;
+        border: 1px solid #FF9933;
+    }
+    .back-btn:hover {
+        background: #FF9933;
+        color: white;
+        transform: translateX(-5px);
+    }
+    
+    /* Tab Styles */
+    .tabs-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    .tabs {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+    }
+    .tab-btn {
+        padding: 12px 30px;
+        background: white;
+        border: 2px solid #FF9933;
+        border-radius: 50px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s;
+        color: #FF9933;
+    }
+    .tab-btn.active {
+        background: #FF9933;
+        color: white;
+        box-shadow: 0 5px 15px rgba(255,153,51,0.3);
+    }
+    .tab-btn:hover {
+        background: #FF9933;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    /* Content Panels */
+    .tab-panel {
+        display: none;
+        animation: fadeIn 0.5s ease;
+    }
+    .tab-panel.active {
+        display: block;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Cards Styles */
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        padding: 20px 0;
+    }
+    .state-card, .service-card, .company-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+        cursor: pointer;
+        border: 1px solid #e0e0e0;
+    }
+    .state-card:hover, .service-card:hover, .company-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(255,153,51,0.2);
+        border-color: #FF9933;
+    }
+    .state-name, .service-title, .company-name {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #FF9933;
+        margin-bottom: 10px;
+    }
+    .quick-stats {
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0;
+    }
+    .stat-item {
+        text-align: center;
+    }
+    .stat-value {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #138808;
+    }
+    .service-icon, .company-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    .service-desc, .company-desc {
+        font-size: 0.85rem;
+        color: #666;
+        margin-top: 8px;
+    }
+    .company-sector {
+        display: inline-block;
+        background: #fff3e0;
+        padding: 3px 12px;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        color: #FF9933;
+        margin-top: 8px;
+    }
+    .view-all {
+        text-align: center;
+        margin-top: 20px;
+        margin-bottom: 30px;
+    }
+    .view-all a {
+        color: #FF9933;
+        font-weight: bold;
+        text-decoration: none;
+    }
+    .view-all a:hover {
+        color: #138808;
+    }
+    
+    /* District Section */
+    .district-section {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 20px;
+        margin-top: 30px;
+    }
+    .district-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+    }
+    .district-list a {
+        display: block;
+        padding: 8px 15px;
+        background: white;
+        border-radius: 8px;
+        color: #333;
+        text-decoration: none;
+        transition: all 0.3s;
+    }
+    .district-list a:hover {
+        background: #FF9933;
+        color: white;
+        transform: translateX(5px);
+    }
+    
+    @media (max-width: 768px) {
+        .tab-btn {
+            padding: 8px 20px;
+            font-size: 0.9rem;
+        }
+        .card-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="hero-gov">
+    <div class="container">
+        <h1>🏛️ गवर्नमेंट डैशबोर्ड</h1>
+        <p>राज्य | सरकारी सेवाएं | कंपनियां | जिला - एक क्लिक पर</p>
+    </div>
+</div>
+
+<!-- Back to Home Button -->
+<div class="back-home">
+    <a href="/" class="back-btn">
+        <i class="fas fa-arrow-left"></i> वापस होम पेज
+    </a>
+</div>
+
+<div class="tabs-container">
+    <!-- Tabs -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('states')">🇮🇳 सभी राज्य</button>
+        <button class="tab-btn" onclick="showTab('services')">🏛️ सरकारी सेवाएं</button>
+        <button class="tab-btn" onclick="showTab('companies')">🏢 सभी कंपनियां</button>
+    </div>
+    
+    <!-- Tab 1: States Panel -->
+    <div id="statesPanel" class="tab-panel active">
+        <div class="card-grid">
+            <div class="state-card" onclick="window.location='/gov/state/महाराष्ट्र'">
+                <h3 class="state-name">🇮🇳 महाराष्ट्र</h3>
+                <p>मुंबई - राजधानी</p>
+                <div class="quick-stats">
+                    <div class="stat-item"><div class="stat-value">36</div><small>जिले</small></div>
+                    <div class="stat-item"><div class="stat-value">12.42cr</div><small>जनसंख्या</small></div>
+                    <div class="stat-item"><div class="stat-value">42.5Lcr</div><small>GDP</small></div>
+                </div>
+                <button class="btn btn-sm btn-warning mt-2">देखें →</button>
+            </div>
+            <div class="state-card" onclick="window.location='/gov/state/गुजरात'">
+                <h3 class="state-name">🇮🇳 गुजरात</h3>
+                <p>गांधीनगर - राजधानी</p>
+                <div class="quick-stats">
+                    <div class="stat-item"><div class="stat-value">33</div><small>जिले</small></div>
+                    <div class="stat-item"><div class="stat-value">6.04cr</div><small>जनसंख्या</small></div>
+                    <div class="stat-item"><div class="stat-value">22.5Lcr</div><small>GDP</small></div>
+                </div>
+                <button class="btn btn-sm btn-warning mt-2">देखें →</button>
+            </div>
+            <div class="state-card" onclick="window.location='/gov/state/कर्नाटक'">
+                <h3 class="state-name">🇮🇳 कर्नाटक</h3>
+                <p>बेंगलुरु - राजधानी</p>
+                <div class="quick-stats">
+                    <div class="stat-item"><div class="stat-value">31</div><small>जिले</small></div>
+                    <div class="stat-item"><div class="stat-value">6.41cr</div><small>जनसंख्या</small></div>
+                    <div class="stat-item"><div class="stat-value">21.8Lcr</div><small>GDP</small></div>
+                </div>
+                <button class="btn btn-sm btn-warning mt-2">देखें →</button>
+            </div>
+            <div class="state-card" onclick="window.location='/gov/state/उत्तर प्रदेश'">
+                <h3 class="state-name">🇮🇳 उत्तर प्रदेश</h3>
+                <p>लखनऊ - राजधानी</p>
+                <div class="quick-stats">
+                    <div class="stat-item"><div class="stat-value">75</div><small>जिले</small></div>
+                    <div class="stat-item"><div class="stat-value">23.8cr</div><small>जनसंख्या</small></div>
+                    <div class="stat-item"><div class="stat-value">23.5Lcr</div><small>GDP</small></div>
+                </div>
+                <button class="btn btn-sm btn-warning mt-2">देखें →</button>
+            </div>
+            <div class="state-card" onclick="window.location='/gov/state/तमिलनाडु'">
+                <h3 class="state-name">🇮🇳 तमिलनाडु</h3>
+                <p>चेन्नई - राजधानी</p>
+                <div class="quick-stats">
+                    <div class="stat-item"><div class="stat-value">38</div><small>जिले</small></div>
+                    <div class="stat-item"><div class="stat-value">7.2cr</div><small>जनसंख्या</small></div>
+                    <div class="stat-item"><div class="stat-value">27.2Lcr</div><small>GDP</small></div>
+                </div>
+                <button class="btn btn-sm btn-warning mt-2">देखें →</button>
+            </div>
+            <div class="state-card" onclick="window.location='/gov/state/राजस्थान'">
+                <h3 class="state-name">🇮🇳 राजस्थान</h3>
+                <p>जयपुर - राजधानी</p>
+                <div class="quick-stats">
+                    <div class="stat-item"><div class="stat-value">33</div><small>जिले</small></div>
+                    <div class="stat-item"><div class="stat-value">7.8cr</div><small>जनसंख्या</small></div>
+                    <div class="stat-item"><div class="stat-value">15.2Lcr</div><small>GDP</small></div>
+                </div>
+                <button class="btn btn-sm btn-warning mt-2">देखें →</button>
+            </div>
+        </div>
+        
+        <!-- District-wise Section -->
+        <div class="district-section">
+            <h3>🗺️ जिला स्तरीय सेवाएं</h3>
+            <p>अपने जिले की जानकारी प्राप्त करें</p>
+            <div class="district-list">
+                <a href="/gov/district/महाराष्ट्र/नागपुर">📍 नागपुर, महाराष्ट्र</a>
+                <a href="/gov/district/महाराष्ट्र/मुंबई">📍 मुंबई, महाराष्ट्र</a>
+                <a href="/gov/district/महाराष्ट्र/पुणे">📍 पुणे, महाराष्ट्र</a>
+                <a href="/gov/district/गुजरात/अहमदाबाद">📍 अहमदाबाद, गुजरात</a>
+                <a href="/gov/district/कर्नाटक/बेंगलुरु">📍 बेंगलुरु, कर्नाटक</a>
+            </div>
+        </div>
+        
+        <div class="view-all">
+            <a href="/gov/all-states">सभी 28 राज्य + 8 केंद्रशासित प्रदेश देखें →</a>
+        </div>
+    </div>
+    <div class="view-all">
+    <a href="/gov/direct-services" class="btn btn-success btn-lg">🏛️ सभी सरकारी सेवाएं देखें (Direct Links)</a>
+ </div>
+    <!-- Tab 2: Services Panel - पूरी सरकारी सेवाएं -->
+    <div id="servicesPanel" class="tab-panel">
+        <div class="card-grid">
+            <div class="service-card" onclick="window.location='/gov/category/वित्त एवं कर'">
+                <div class="service-icon">💰</div>
+                <div class="service-title">वित्त एवं कर</div>
+                <div class="service-desc">पैन, आयकर, GST, e-Way Bill, e-Invoice</div>
+            </div>
+            <div class="service-card" onclick="window.location='/gov/category/पहचान एवं दस्तावेज़'">
+                <div class="service-icon">🆔</div>
+                <div class="service-title">पहचान एवं दस्तावेज़</div>
+                <div class="service-desc">आधार, डिजिलॉकर, मेरी पहचान, पासपोर्ट</div>
+            </div>
+            <div class="service-card" onclick="window.location='/gov/category/चुनाव एवं लोकतंत्र'">
+                <div class="service-icon">🗳️</div>
+                <div class="service-title">चुनाव एवं लोकतंत्र</div>
+                <div class="service-desc">वोटर आईडी, वोटर हेल्पलाइन, माईगव</div>
+            </div>
+            <div class="service-card" onclick="window.location='/gov/category/शिक्षा'">
+                <div class="service-icon">📚</div>
+                <div class="service-title">शिक्षा</div>
+                <div class="service-desc">दीक्षा, NPTEL, छात्रवृत्ति, ई-पाठशाला</div>
+            </div>
+            <div class="service-card" onclick="window.location='/gov/category/रोजगार एवं करियर'">
+                <div class="service-icon">💼</div>
+                <div class="service-title">रोजगार एवं करियर</div>
+                <div class="service-desc">NCS, eShram, PMKVY, आजीविका</div>
+            </div>
+            <div class="service-card" onclick="window.location='/gov/category/स्वास्थ्य'">
+                <div class="service-icon">🏥</div>
+                <div class="service-title">स्वास्थ्य</div>
+                <div class="service-desc">आयुष्मान भारत, ORS, CoWIN</div>
+            </div>
+            <div class="service-card" onclick="window.location='/gov/category/परिवहन'">
+                <div class="service-icon">🚗</div>
+                <div class="service-title">परिवहन</div>
+                <div class="service-desc">Parivahan, Sarathi, Vahan</div>
+            </div>
+            <div class="service-card" onclick="window.location='/gov/category/कृषि'">
+                <div class="service-icon">🌾</div>
+                <div class="service-title">कृषि</div>
+                <div class="service-desc">eNAM, SATHI, FRUITS</div>
+            </div>
+            <div class="service-card" onclick="window.location='/gov/category/कल्याण एवं योजनाएं'">
+                <div class="service-icon">🎯</div>
+                <div class="service-title">कल्याण एवं योजनाएं</div>
+                <div class="service-desc">myScheme, UMANG, जीवन प्रमाण</div>
+            </div>
+            <div class="service-card" onclick="window.location='/gov/category/यात्रा एवं पर्यटन'">
+                <div class="service-icon">✈️</div>
+                <div class="service-title">यात्रा एवं पर्यटन</div>
+                <div class="service-desc">पासपोर्ट, भारत ऑनलाइन वीज़ा</div>
+            </div>
+            <div class="service-card" onclick="window.location='/gov/category/न्याय एवं कानून'">
+                <div class="service-icon">⚖️</div>
+                <div class="service-title">न्याय एवं कानून</div>
+                <div class="service-desc">ई-कोर्ट्स, ई-फाइलिंग</div>
+            </div>
+        </div>
+        <div class="view-all">
+            <a href="/gov/services">सभी सरकारी सेवाएं देखें (12,000+ सेवाएं) →</a>
+        </div>
+    </div>
+    
+    <!-- Tab 3: Companies Panel - पूरी कंपनियां -->
+    <div id="companiesPanel" class="tab-panel">
+        <div class="card-grid">
+            <div class="company-card" onclick="window.location='/gov/companies?filter=steel'">
+                <div class="company-icon">🏭</div>
+                <div class="company-name">स्टील & मेटल</div>
+                <div class="company-desc">Tata Steel, JSW, SAIL, Hindalco, Vedanta, NMDC</div>
+                <span class="company-sector">7 कंपनियां</span>
+            </div>
+            <div class="company-card" onclick="window.location='/gov/companies?filter=auto'">
+                <div class="company-icon">🚗</div>
+                <div class="company-name">ऑटोमोबाइल</div>
+                <div class="company-desc">Tata Motors, Mahindra, Maruti, Bajaj, Hero, Hyundai</div>
+                <span class="company-sector">6 कंपनियां</span>
+            </div>
+            <div class="company-card" onclick="window.location='/gov/companies?filter=it'">
+                <div class="company-icon">💻</div>
+                <div class="company-name">आईटी & सॉफ्टवेयर</div>
+                <div class="company-desc">TCS, Infosys, Wipro, HCL, Tech Mahindra</div>
+                <span class="company-sector">5 कंपनियां</span>
+            </div>
+            <div class="company-card" onclick="window.location='/gov/companies?filter=banking'">
+                <div class="company-icon">🏦</div>
+                <div class="company-name">बैंकिंग & वित्त</div>
+                <div class="company-desc">SBI, HDFC, ICICI, Axis, Kotak</div>
+                <span class="company-sector">5 कंपनियां</span>
+            </div>
+            <div class="company-card" onclick="window.location='/gov/companies?filter=defence'">
+                <div class="company-icon">🛡️</div>
+                <div class="company-name">रक्षा & एयरोस्पेस</div>
+                <div class="company-desc">DRDO, ISRO, BEL, HAL, Mazagon Dock, BDL</div>
+                <span class="company-sector">6 कंपनियां</span>
+            </div>
+            <div class="company-card" onclick="window.location='/gov/companies?filter=pharma'">
+                <div class="company-icon">💊</div>
+                <div class="company-name">फार्मा & हेल्थकेयर</div>
+                <div class="company-desc">Sun Pharma, Dr Reddy's, Cipla</div>
+                <span class="company-sector">3 कंपनियां</span>
+            </div>
+            <div class="company-card" onclick="window.location='/gov/companies?filter=energy'">
+                <div class="company-icon">⚡</div>
+                <div class="company-name">एनर्जी & पावर</div>
+                <div class="company-desc">NTPC, PowerGrid, Adani Green, Tata Power</div>
+                <span class="company-sector">4 कंपनियां</span>
+            </div>
+            <div class="company-card" onclick="window.location='/gov/companies?filter=fmcg'">
+                <div class="company-icon">🍱</div>
+                <div class="company-name">एफएमसीजी</div>
+                <div class="company-desc">HUL, ITC, Nestle, Britannia</div>
+                <span class="company-sector">4 कंपनियां</span>
+            </div>
+            <div class="company-card" onclick="window.location='/gov/companies?filter=telecom'">
+                <div class="company-icon">📱</div>
+                <div class="company-name">टेलीकॉम</div>
+                <div class="company-desc">Jio, Airtel, BSNL, Vi</div>
+                <span class="company-sector">4 कंपनियां</span>
+            </div>
+            <div class="company-card" onclick="window.location='/gov/companies?filter=oilgas'">
+                <div class="company-icon">🛢️</div>
+                <div class="company-name">ऑयल & गैस</div>
+                <div class="company-desc">ONGC, Reliance, BPCL, IOCL</div>
+                <span class="company-sector">4 कंपनियां</span>
+            </div>
+            <div class="company-card" onclick="window.location='/gov/companies?filter=infra'">
+                <div class="company-icon">🏗️</div>
+                <div class="company-name">इंफ्रा & सीमेंट</div>
+                <div class="company-desc">L&T, UltraTech, Ambuja</div>
+                <span class="company-sector">3 कंपनियां</span>
+            </div>
+        </div>
+        <div class="view-all">
+            <a href="/gov/companies">सभी कंपनियां देखें (49+ कंपनियां) →</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showTab(tabName) {
+        // Hide all panels
+        document.getElementById('statesPanel').classList.remove('active');
+        document.getElementById('servicesPanel').classList.remove('active');
+        document.getElementById('companiesPanel').classList.remove('active');
+        
+        // Remove active class from all buttons
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Show selected panel
+        if (tabName === 'states') {
+            document.getElementById('statesPanel').classList.add('active');
+            document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        } else if (tabName === 'services') {
+            document.getElementById('servicesPanel').classList.add('active');
+            document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        } else if (tabName === 'companies') {
+            document.getElementById('companiesPanel').classList.add('active');
+            document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        }
+    }
+</script>
+{% endblock %}

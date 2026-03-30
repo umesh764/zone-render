@@ -1,0 +1,635 @@
+{% extends "base.html" %}
+
+{% block title %}Entertainment Hub - Zone{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary: #667eea;
+        --secondary: #764ba2;
+        --accent: #ff6b35;
+        --dark: #2d3748;
+        --light: #f7fafc;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .entertainment-hero {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        padding: 4rem 2rem;
+        text-align: center;
+        color: white;
+        border-bottom: 5px solid var(--accent);
+    }
+
+    .entertainment-hero h1 {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .search-box {
+        max-width: 600px;
+        margin: 2rem auto;
+        display: flex;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+
+    .search-box input {
+        flex: 1;
+        padding: 1.2rem;
+        border: none;
+        border-radius: 50px 0 0 50px;
+        outline: none;
+        font-size: 1.1rem;
+    }
+
+    .search-box button {
+        padding: 0 2.5rem;
+        background: var(--accent);
+        color: white;
+        border: none;
+        border-radius: 0 50px 50px 0;
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .section-title {
+        text-align: center;
+        margin: 3rem 0 2rem;
+        color: white;
+        font-size: 2.5rem;
+    }
+
+    .platform-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .platform-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        transition: 0.4s;
+        cursor: pointer;
+        border: 2px solid transparent;
+    }
+
+    .platform-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--accent);
+        box-shadow: 0 20px 40px rgba(255,107,53,0.4);
+    }
+
+    .platform-logo {
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+    }
+
+    .platform-info {
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .platform-info h3 {
+        margin-bottom: 0.5rem;
+        color: var(--dark);
+    }
+
+    .platform-info p {
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .platform-badge {
+        display: inline-block;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+
+    .badge-free {
+        background: #28a745;
+        color: white;
+    }
+
+    .badge-paid {
+        background: var(--accent);
+        color: white;
+    }
+
+    .badge-both {
+        background: var(--primary);
+        color: white;
+    }
+
+    .movie-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .movie-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        transition: 0.4s;
+    }
+
+    .movie-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(255,107,53,0.4);
+    }
+
+    .movie-poster {
+        height: 200px;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        position: relative;
+    }
+
+    .movie-rating {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--accent);
+        color: white;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+
+    .movie-info {
+        padding: 1.5rem;
+    }
+
+    .movie-info h3 {
+        margin-bottom: 0.5rem;
+    }
+
+    .movie-meta {
+        display: flex;
+        gap: 1rem;
+        color: #666;
+        margin: 1rem 0;
+    }
+
+    .book-btn {
+        width: 100%;
+        padding: 1rem;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .book-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(102,126,234,0.4);
+    }
+
+    .ott-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+        padding: 2rem;
+    }
+
+    .ott-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .ott-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(255,107,53,0.3);
+    }
+
+    .ott-card i {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .ott-card h4 {
+        color: var(--dark);
+    }
+
+    .event-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+        padding: 2rem;
+    }
+
+    .event-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+
+    .event-header {
+        background: linear-gradient(135deg, var(--accent), #ff8c5a);
+        color: white;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .event-body {
+        padding: 1.5rem;
+    }
+
+    .event-date {
+        color: var(--accent);
+        font-weight: bold;
+    }
+</style>
+
+<div class="entertainment-hero">
+    <h1>🎬 Zone Entertainment Hub</h1>
+    <p>Movies • OTT • Music • Sports • Events • Free & Paid</p>
+    
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 Search movies, shows, songs, events...">
+        <button onclick="searchItems()">Search</button>
+    </div>
+</div>
+
+<!-- OTT Platforms Section -->
+<h2 class="section-title">📺 OTT Platforms</h2>
+<div class="platform-grid">
+    <!-- Netflix -->
+    <div class="platform-card" onclick="window.location.href='{{ url_for('ott.netflix') }}'">
+        <div class="platform-logo" style="background:#e50914;">
+            <i class="fas fa-film"></i>
+        </div>
+        <div class="platform-info">
+            <h3>Netflix</h3>
+            <p>Movies • Web Series • Originals</p>
+            <span class="platform-badge badge-paid">Paid</span>
+        </div>
+    </div>
+
+    <!-- Amazon Prime -->
+    <div class="platform-card" onclick="window.location.href='{{ url_for('ott.prime') }}'">
+        <div class="platform-logo" style="background:#00a8e1;">
+            <i class="fab fa-amazon"></i>
+        </div>
+        <div class="platform-info">
+            <h3>Amazon Prime</h3>
+            <p>Movies • Shows • Originals</p>
+            <span class="platform-badge badge-paid">Paid</span>
+        </div>
+    </div>
+
+    <!-- Disney+ Hotstar -->
+    <div class="platform-card" onclick="window.location.href='{{ url_for('ott.hotstar') }}'">
+        <div class="platform-logo" style="background:#1f2e3a;">
+            <i class="fas fa-star"></i>
+        </div>
+        <div class="platform-info">
+            <h3>Disney+ Hotstar</h3>
+            <p>Movies • Sports • TV Shows</p>
+            <span class="platform-badge badge-both">Free/Paid</span>
+        </div>
+    </div>
+
+    <!-- JioCinema -->
+    <div class="platform-card" onclick="window.location.href='https://www.jiocinema.com'">
+        <div class="platform-logo" style="background:#e11b22;">
+            <i class="fas fa-play-circle"></i>
+        </div>
+        <div class="platform-info">
+            <h3>JioCinema</h3>
+            <p>Movies • Web Series • Live TV</p>
+            <span class="platform-badge badge-free">Free</span>
+        </div>
+    </div>
+
+    <!-- ZEE5 -->
+    <div class="platform-card" onclick="window.location.href='https://www.zee5.com'">
+        <div class="platform-logo" style="background:#6c27b3;">
+            <i class="fas fa-tv"></i>
+        </div>
+        <div class="platform-info">
+            <h3>ZEE5</h3>
+            <p>Movies • Shows • Originals</p>
+            <span class="platform-badge badge-both">Free/Paid</span>
+        </div>
+    </div>
+
+    <!-- SonyLIV -->
+    <div class="platform-card" onclick="window.location.href='https://www.sonyliv.com'">
+        <div class="platform-logo" style="background:#2a2a2a;">
+            <i class="fas fa-satellite"></i>
+        </div>
+        <div class="platform-info">
+            <h3>SonyLIV</h3>
+            <p>Movies • Sports • Shows</p>
+            <span class="platform-badge badge-both">Free/Paid</span>
+        </div>
+    </div>
+</div>
+
+<!-- Music Platforms -->
+<h2 class="section-title">🎵 Music Streaming</h2>
+<div class="platform-grid">
+    <!-- Spotify -->
+    <div class="platform-card" onclick="window.location.href='{{ url_for('ott.spotify') }}'">
+        <div class="platform-logo" style="background:#1db954;">
+            <i class="fab fa-spotify"></i>
+        </div>
+        <div class="platform-info">
+            <h3>Spotify</h3>
+            <p>Music • Podcasts</p>
+            <span class="platform-badge badge-both">Free/Paid</span>
+        </div>
+    </div>
+
+    <!-- Gaana -->
+    <div class="platform-card" onclick="window.location.href='https://gaana.com'">
+        <div class="platform-logo" style="background:#ff5722;">
+            <i class="fas fa-music"></i>
+        </div>
+        <div class="platform-info">
+            <h3>Gaana</h3>
+            <p>Hindi • Regional • Podcasts</p>
+            <span class="platform-badge badge-free">Free</span>
+        </div>
+    </div>
+
+    <!-- JioSaavn -->
+    <div class="platform-card" onclick="window.location.href='https://www.jiosaavn.com'">
+        <div class="platform-logo" style="background:#e11b22;">
+            <i class="fas fa-headphones"></i>
+        </div>
+        <div class="platform-info">
+            <h3>JioSaavn</h3>
+            <p>Music • Podcasts</p>
+            <span class="platform-badge badge-both">Free/Paid</span>
+        </div>
+    </div>
+
+    <!-- Wynk -->
+    <div class="platform-card" onclick="window.location.href='https://wynk.in'">
+        <div class="platform-logo" style="background:#ff6b6b;">
+            <i class="fas fa-wifi"></i>
+        </div>
+        <div class="platform-info">
+            <h3>Wynk Music</h3>
+            <p>Music • Podcasts</p>
+            <span class="platform-badge badge-free">Free</span>
+        </div>
+    </div>
+</div>
+
+<!-- Ticket Booking Platforms -->
+<h2 class="section-title">🎟️ Movie Tickets</h2>
+<div class="platform-grid">
+    <!-- BookMyShow -->
+    <div class="platform-card" onclick="window.location.href='{{ url_for('shopping.bookmyshow') }}'">
+        <div class="platform-logo" style="background:#f84464;">
+            <i class="fas fa-ticket-alt"></i>
+        </div>
+        <div class="platform-info">
+            <h3>BookMyShow</h3>
+            <p>Movies • Events • Sports</p>
+            <span class="platform-badge badge-paid">Paid</span>
+        </div>
+    </div>
+
+    <!-- PVR Cinemas -->
+    <div class="platform-card" onclick="window.location.href='{{ url_for('shopping.pvrcinemas') }}'">
+        <div class="platform-logo" style="background:#e11b22;">
+            <i class="fas fa-film"></i>
+        </div>
+        <div class="platform-info">
+            <h3>PVR Cinemas</h3>
+            <p>Movie Tickets • Food</p>
+            <span class="platform-badge badge-paid">Paid</span>
+        </div>
+    </div>
+
+    <!-- INOX -->
+    <div class="platform-card" onclick="window.location.href='{{ url_for('shopping.inox') }}'">
+        <div class="platform-logo" style="background:#4a4a4a;">
+            <i class="fas fa-video"></i>
+        </div>
+        <div class="platform-info">
+            <h3>INOX</h3>
+            <p>Movie Tickets • Food</p>
+            <span class="platform-badge badge-paid">Paid</span>
+        </div>
+    </div>
+
+    <!-- Paytm Insider -->
+    <div class="platform-card" onclick="window.location.href='https://insider.in'">
+        <div class="platform-logo" style="background:#00baf2;">
+            <i class="fas fa-calendar-alt"></i>
+        </div>
+        <div class="platform-info">
+            <h3>Paytm Insider</h3>
+            <p>Events • Workshops • Experiences</p>
+            <span class="platform-badge badge-paid">Paid</span>
+        </div>
+    </div>
+</div>
+
+<!-- Sports Platforms -->
+<h2 class="section-title">🏏 Sports</h2>
+<div class="platform-grid">
+    <!-- FanCode -->
+    <div class="platform-card" onclick="window.location.href='https://www.fancode.com'">
+        <div class="platform-logo" style="background:#1e2b3a;">
+            <i class="fas fa-futbol"></i>
+        </div>
+        <div class="platform-info">
+            <h3>FanCode</h3>
+            <p>Live Sports • Highlights</p>
+            <span class="platform-badge badge-both">Free/Paid</span>
+        </div>
+    </div>
+
+    <!-- SonyLIV Sports -->
+    <div class="platform-card" onclick="window.location.href='https://www.sonyliv.com/sports'">
+        <div class="platform-logo" style="background:#2a2a2a;">
+            <i class="fas fa-trophy"></i>
+        </div>
+        <div class="platform-info">
+            <h3>SonyLIV Sports</h3>
+            <p>Cricket • Football • Tennis</p>
+            <span class="platform-badge badge-paid">Paid</span>
+        </div>
+    </div>
+
+    <!-- JioCinema Sports -->
+    <div class="platform-card" onclick="window.location.href='https://www.jiocinema.com/sports'">
+        <div class="platform-logo" style="background:#e11b22;">
+            <i class="fas fa-cricket"></i>
+        </div>
+        <div class="platform-info">
+            <h3>JioCinema Sports</h3>
+            <p>Cricket • Football • Live</p>
+            <span class="platform-badge badge-free">Free</span>
+        </div>
+    </div>
+</div>
+
+<!-- Free Content Section -->
+<h2 class="section-title">🆓 Free Content</h2>
+<div class="platform-grid">
+    <!-- YouTube -->
+    <div class="platform-card" onclick="window.location.href='{{ url_for('ott.youtube') }}'">
+        <div class="platform-logo" style="background:#ff0000;">
+            <i class="fab fa-youtube"></i>
+        </div>
+        <div class="platform-info">
+            <h3>YouTube</h3>
+            <p>Videos • Music • Free Movies</p>
+            <span class="platform-badge badge-free">Free</span>
+        </div>
+    </div>
+
+    <!-- MX Player -->
+    <div class="platform-card" onclick="window.location.href='https://www.mxplayer.in'">
+        <div class="platform-logo" style="background:#f70b3e;">
+            <i class="fas fa-play"></i>
+        </div>
+        <div class="platform-info">
+            <h3>MX Player</h3>
+            <p>Free Movies • Web Series</p>
+            <span class="platform-badge badge-free">Free</span>
+        </div>
+    </div>
+
+    <!-- Voot -->
+    <div class="platform-card" onclick="window.location.href='https://www.voot.com'">
+        <div class="platform-logo" style="background:#ff4a4a;">
+            <i class="fas fa-tv"></i>
+        </div>
+        <div class="platform-info">
+            <h3>Voot</h3>
+            <p>TV Shows • Movies</p>
+            <span class="platform-badge badge-free">Free</span>
+        </div>
+    </div>
+</div>
+
+<!-- Trending Movies -->
+<h2 class="section-title">🎬 Trending Now</h2>
+<div class="movie-grid">
+    <div class="movie-card">
+        <div class="movie-poster">
+            <span class="movie-rating">⭐ 4.5</span>
+        </div>
+        <div class="movie-info">
+            <h3>Pathaan</h3>
+            <div class="movie-meta">
+                <span>2h 26m</span>
+                <span>Hindi</span>
+            </div>
+            <p>Action • Thriller</p>
+            <button class="book-btn" onclick="window.location.href='{{ url_for('shopping.bookmyshow') }}'">
+                Book Tickets
+            </button>
+        </div>
+    </div>
+
+    <div class="movie-card">
+        <div class="movie-poster">
+            <span class="movie-rating">⭐ 4.2</span>
+        </div>
+        <div class="movie-info">
+            <h3>Jawan</h3>
+            <div class="movie-meta">
+                <span>2h 45m</span>
+                <span>Hindi</span>
+            </div>
+            <p>Action • Drama</p>
+            <button class="book-btn" onclick="window.location.href='{{ url_for('shopping.bookmyshow') }}'">
+                Book Tickets
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Upcoming Events -->
+<h2 class="section-title">🎪 Upcoming Events</h2>
+<div class="event-grid">
+    <div class="event-card">
+        <div class="event-header">
+            <h3>Coldplay Concert</h3>
+        </div>
+        <div class="event-body">
+            <p class="event-date">📅 15 May 2026</p>
+            <p>📍 Mumbai, DY Patil Stadium</p>
+            <p>🎫 Tickets starting ₹2,500</p>
+            <button class="book-btn" onclick="window.location.href='{{ url_for('shopping.bookmyshow') }}'">
+                Book Now
+            </button>
+        </div>
+    </div>
+
+    <div class="event-card">
+        <div class="event-header">
+            <h3>Comedy Night</h3>
+        </div>
+        <div class="event-body">
+            <p class="event-date">📅 20 May 2026</p>
+            <p>📍 Pune, E-Square</p>
+            <p>🎫 Tickets starting ₹499</p>
+            <button class="book-btn" onclick="window.location.href='{{ url_for('shopping.bookmyshow') }}'">
+                Book Now
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function searchItems() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const cards = document.querySelectorAll('.platform-card, .movie-card, .event-card');
+        
+        cards.forEach(card => {
+            const text = card.textContent.toLowerCase();
+            if (text.includes(searchTerm) || searchTerm === '') {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+</script>
+{% endblock %}%}

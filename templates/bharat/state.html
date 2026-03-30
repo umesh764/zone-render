@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}{{ state }} - भारत दर्शन{% endblock %}
+
+{% block content %}
+<style>
+    .state-header {
+        background: linear-gradient(135deg, #FF9933, #138808);
+        padding: 3rem 2rem;
+        text-align: center;
+        color: white;
+        border-radius: 0 0 30px 30px;
+        margin-bottom: 2rem;
+    }
+
+    .items-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .item-card {
+        background: white;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .item-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(255,153,51,0.2);
+    }
+
+    .card-image {
+        height: 180px;
+        background-size: cover;
+        background-position: center;
+    }
+
+    .card-content {
+        padding: 1.5rem;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin: 2rem;
+    }
+
+    .page-btn {
+        padding: 0.5rem 1rem;
+        background: white;
+        border: 2px solid #FF9933;
+        color: #FF9933;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+</style>
+
+<div class="state-header">
+    <h1>🗺️ {{ state }}</h1>
+    <p>{{ items.total }} आइटम उपलब्ध</p>
+</div>
+
+<div class="items-grid">
+    {% for item in items.items %}
+    <div class="item-card" onclick="window.location.href='/bharat/item/{{ item.id }}'">
+        <div class="card-image" style="background-image: url('{{ item.main_image or 'https://via.placeholder.com/300x200?text='+item.name }}');"></div>
+        <div class="card-content">
+            <h3>{{ item.name }}</h3>
+            <p style="color: #666;">{{ item.category }} | {{ item.city or '' }}</p>
+            <p>{{ item.description[:100] }}{% if item.description|length > 100 %}...{% endif %}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    {% if items.has_prev %}
+    <a href="{{ url_for('bharat.state_view', state_name=state, page=items.prev_num) }}" class="page-btn">← पिछला</a>
+    {% endif %}
+    <span class="page-btn" style="background:#FF9933; color:white;">{{ items.page }}</span>
+    {% if items.has_next %}
+    <a href="{{ url_for('bharat.state_view', state_name=state, page=items.next_num) }}" class="page-btn">अगला →</a>
+    {% endif %}
+</div>
+{% endblock %}

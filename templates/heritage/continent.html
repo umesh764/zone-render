@@ -1,0 +1,538 @@
+{% extends "base.html" %}
+
+{% block title %}{{ continent }} की धरोहरें - विश्व धरोहर{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --asia: #E67E22;
+        --africa: #D35400;
+        --namerica: #3498DB;
+        --samerica: #2ECC71;
+        --europe: #9B59B6;
+        --australia: #F1C40F;
+        --antarctica: #95A5A6;
+    }
+
+    .continent-header {
+        background: linear-gradient(135deg, 
+            {% if continent == 'एशिया' %}#E67E22, #D35400
+            {% elif continent == 'अफ्रीका' %}#D35400, #A04000
+            {% elif continent == 'उत्तरी अमेरिका' %}#3498DB, #1F618D
+            {% elif continent == 'दक्षिणी अमेरिका' %}#2ECC71, #186A3B
+            {% elif continent == 'यूरोप' %}#9B59B6, #6C3483
+            {% elif continent == 'ऑस्ट्रेलिया' %}#F1C40F, #B7950B
+            {% else %}#95A5A6, #5D6D7E
+            {% endif %});
+        padding: 3rem 2rem;
+        text-align: center;
+        color: white;
+        border-radius: 0 0 50px 50px;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .continent-header::before {
+        content: '🌍';
+        position: absolute;
+        right: -30px;
+        top: -30px;
+        font-size: 150px;
+        opacity: 0.2;
+        transform: rotate(15deg);
+    }
+
+    .continent-header h1 {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .continent-stats {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-item {
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(5px);
+        padding: 0.8rem 1.5rem;
+        border-radius: 50px;
+        font-weight: bold;
+    }
+
+    .filter-section {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 2rem;
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .filter-select {
+        padding: 0.8rem 1.5rem;
+        border: 2px solid #ddd;
+        border-radius: 50px;
+        font-size: 1rem;
+        outline: none;
+        cursor: pointer;
+        min-width: 200px;
+        background: white;
+    }
+
+    .filter-select:focus {
+        border-color: 
+        {% if continent == 'एशिया' %}#E67E22
+        {% elif continent == 'अफ्रीका' %}#D35400
+        {% elif continent == 'उत्तरी अमेरिका' %}#3498DB
+        {% elif continent == 'दक्षिणी अमेरिका' %}#2ECC71
+        {% elif continent == 'यूरोप' %}#9B59B6
+        {% elif continent == 'ऑस्ट्रेलिया' %}#F1C40F
+        {% else %}#95A5A6
+        {% endif %};
+    }
+
+    .heritage-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 2rem;
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .heritage-card {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 3px solid transparent;
+    }
+
+    .heritage-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        border-color: 
+        {% if continent == 'एशिया' %}#E67E22
+        {% elif continent == 'अफ्रीका' %}#D35400
+        {% elif continent == 'उत्तरी अमेरिका' %}#3498DB
+        {% elif continent == 'दक्षिणी अमेरिका' %}#2ECC71
+        {% elif continent == 'यूरोप' %}#9B59B6
+        {% elif continent == 'ऑस्ट्रेलिया' %}#F1C40F
+        {% else %}#95A5A6
+        {% endif %};
+        box-shadow: 0 20px 40px 
+        {% if continent == 'एशिया' %}rgba(230,126,34,0.3)
+        {% elif continent == 'अफ्रीका' %}rgba(211,84,0,0.3)
+        {% elif continent == 'उत्तरी अमेरिका' %}rgba(52,152,219,0.3)
+        {% elif continent == 'दक्षिणी अमेरिका' %}rgba(46,204,113,0.3)
+        {% elif continent == 'यूरोप' %}rgba(155,89,182,0.3)
+        {% elif continent == 'ऑस्ट्रेलिया' %}rgba(241,196,15,0.3)
+        {% else %}rgba(149,165,166,0.3)
+        {% endif %};
+    }
+
+    .card-image {
+        height: 200px;
+        background: linear-gradient(135deg, 
+            {% if continent == 'एशिया' %}#E67E22, #D35400
+            {% elif continent == 'अफ्रीका' %}#D35400, #A04000
+            {% elif continent == 'उत्तरी अमेरिका' %}#3498DB, #1F618D
+            {% elif continent == 'दक्षिणी अमेरिका' %}#2ECC71, #186A3B
+            {% elif continent == 'यूरोप' %}#9B59B6, #6C3483
+            {% elif continent == 'ऑस्ट्रेलिया' %}#F1C40F, #B7950B
+            {% else %}#95A5A6, #5D6D7E
+            {% endif %});
+        position: relative;
+    }
+
+    .card-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: #FFD700;
+        color: #333;
+        padding: 0.5rem 1.2rem;
+        border-radius: 30px;
+        font-weight: bold;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .unesco-badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: rgba(46, 134, 193, 0.9);
+        color: white;
+        padding: 0.3rem 1rem;
+        border-radius: 30px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        backdrop-filter: blur(5px);
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .unesco-badge::before {
+        content: '✓';
+        font-weight: bold;
+    }
+
+    .card-content {
+        padding: 1.5rem;
+    }
+
+    .card-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: 
+        {% if continent == 'एशिया' %}#E67E22
+        {% elif continent == 'अफ्रीका' %}#D35400
+        {% elif continent == 'उत्तरी अमेरिका' %}#3498DB
+        {% elif continent == 'दक्षिणी अमेरिका' %}#2ECC71
+        {% elif continent == 'यूरोप' %}#9B59B6
+        {% elif continent == 'ऑस्ट्रेलिया' %}#F1C40F
+        {% else %}#5D6D7E
+        {% endif %};
+        margin-bottom: 0.5rem;
+    }
+
+    .card-subtitle {
+        color: #666;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .card-subtitle i {
+        color: #FF9933;
+    }
+
+    .card-meta {
+        display: flex;
+        gap: 1rem;
+        color: #777;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+    }
+
+    .card-meta i {
+        color: 
+        {% if continent == 'एशिया' %}#E67E22
+        {% elif continent == 'अफ्रीका' %}#D35400
+        {% elif continent == 'उत्तरी अमेरिका' %}#3498DB
+        {% elif continent == 'दक्षिणी अमेरिका' %}#2ECC71
+        {% elif continent == 'यूरोप' %}#9B59B6
+        {% elif continent == 'ऑस्ट्रेलिया' %}#F1C40F
+        {% else %}#5D6D7E
+        {% endif %};
+        margin-right: 0.3rem;
+    }
+
+    .card-description {
+        color: #444;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #eee;
+    }
+
+    .explore-btn {
+        padding: 0.6rem 1.5rem;
+        background: linear-gradient(135deg, 
+            {% if continent == 'एशिया' %}#E67E22, #D35400
+            {% elif continent == 'अफ्रीका' %}#D35400, #A04000
+            {% elif continent == 'उत्तरी अमेरिका' %}#3498DB, #1F618D
+            {% elif continent == 'दक्षिणी अमेरिका' %}#2ECC71, #186A3B
+            {% elif continent == 'यूरोप' %}#9B59B6, #6C3483
+            {% elif continent == 'ऑस्ट्रेलिया' %}#F1C40F, #B7950B
+            {% else %}#95A5A6, #5D6D7E
+            {% endif %});
+        color: white;
+        text-decoration: none;
+        border-radius: 30px;
+        font-weight: 600;
+        transition: 0.3s;
+        border: 2px solid transparent;
+    }
+
+    .explore-btn:hover {
+        background: transparent;
+        color: 
+        {% if continent == 'एशिया' %}#E67E22
+        {% elif continent == 'अफ्रीका' %}#D35400
+        {% elif continent == 'उत्तरी अमेरिका' %}#3498DB
+        {% elif continent == 'दक्षिणी अमेरिका' %}#2ECC71
+        {% elif continent == 'यूरोप' %}#9B59B6
+        {% elif continent == 'ऑस्ट्रेलिया' %}#F1C40F
+        {% else %}#5D6D7E
+        {% endif %};
+        border-color: currentColor;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+        margin: 3rem 0;
+        flex-wrap: wrap;
+    }
+
+    .page-btn {
+        padding: 0.7rem 1.2rem;
+        background: white;
+        border: 2px solid #ddd;
+        color: #666;
+        text-decoration: none;
+        border-radius: 8px;
+        transition: 0.3s;
+        font-weight: 600;
+    }
+
+    .page-btn:hover {
+        border-color: 
+        {% if continent == 'एशिया' %}#E67E22
+        {% elif continent == 'अफ्रीका' %}#D35400
+        {% elif continent == 'उत्तरी अमेरिका' %}#3498DB
+        {% elif continent == 'दक्षिणी अमेरिका' %}#2ECC71
+        {% elif continent == 'यूरोप' %}#9B59B6
+        {% elif continent == 'ऑस्ट्रेलिया' %}#F1C40F
+        {% else %}#5D6D7E
+        {% endif %};
+        color: 
+        {% if continent == 'एशिया' %}#E67E22
+        {% elif continent == 'अफ्रीका' %}#D35400
+        {% elif continent == 'उत्तरी अमेरिका' %}#3498DB
+        {% elif continent == 'दक्षिणी अमेरिका' %}#2ECC71
+        {% elif continent == 'यूरोप' %}#9B59B6
+        {% elif continent == 'ऑस्ट्रेलिया' %}#F1C40F
+        {% else %}#5D6D7E
+        {% endif %};
+    }
+
+    .page-btn.active {
+        background: 
+        {% if continent == 'एशिया' %}#E67E22
+        {% elif continent == 'अफ्रीका' %}#D35400
+        {% elif continent == 'उत्तरी अमेरिका' %}#3498DB
+        {% elif continent == 'दक्षिणी अमेरिका' %}#2ECC71
+        {% elif continent == 'यूरोप' %}#9B59B6
+        {% elif continent == 'ऑस्ट्रेलिया' %}#F1C40F
+        {% else %}#5D6D7E
+        {% endif %};
+        border-color: transparent;
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem;
+        grid-column: 1/-1;
+        background: white;
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        color: 
+        {% if continent == 'एशिया' %}#E67E22
+        {% elif continent == 'अफ्रीका' %}#D35400
+        {% elif continent == 'उत्तरी अमेरिका' %}#3498DB
+        {% elif continent == 'दक्षिणी अमेरिका' %}#2ECC71
+        {% elif continent == 'यूरोप' %}#9B59B6
+        {% elif continent == 'ऑस्ट्रेलिया' %}#F1C40F
+        {% else %}#5D6D7E
+        {% endif %};
+        opacity: 0.3;
+        margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .continent-header h1 {
+            font-size: 2rem;
+        }
+        .filter-section {
+            flex-direction: column;
+        }
+        .filter-select {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="continent-header">
+    <h1>
+        {% if continent == 'एशिया' %}🌏 एशिया
+        {% elif continent == 'अफ्रीका' %}🌍 अफ्रीका
+        {% elif continent == 'उत्तरी अमेरिका' %}🌎 उत्तरी अमेरिका
+        {% elif continent == 'दक्षिणी अमेरिका' %}🌎 दक्षिणी अमेरिका
+        {% elif continent == 'यूरोप' %}🌍 यूरोप
+        {% elif continent == 'ऑस्ट्रेलिया' %}🇦🇺 ऑस्ट्रेलिया
+        {% elif continent == 'अंटार्कटिका' %}❄️ अंटार्कटिका
+        {% endif %}
+    </h1>
+    <p>{{ sites.total }} धरोहर स्थल | {{ sites.iter_pages()|length }} पृष्ठ</p>
+    
+    <div class="continent-stats">
+        <span class="stat-item">🏛️ {{ sites.total }} स्थल</span>
+        <span class="stat-item">🏷️ {{ sites.items|map(attribute='category')|unique|list|length }} श्रेणियाँ</span>
+        <span class="stat-item">✓ {{ sites.items|selectattr('is_unesco')|list|length }} यूनेस्को</span>
+    </div>
+</div>
+
+<div class="filter-section">
+    <select class="filter-select" id="categoryFilter" onchange="filterByCategory()">
+        <option value="">सभी श्रेणियाँ</option>
+        {% for cat in categories %}
+        <option value="{{ cat }}">{{ cat }}</option>
+        {% endfor %}
+    </select>
+    
+    <select class="filter-select" id="countryFilter" onchange="filterByCountry()">
+        <option value="">सभी देश</option>
+        {% for country in sites.items|map(attribute='country')|unique|sort %}
+        <option value="{{ country }}">{{ country }}</option>
+        {% endfor %}
+    </select>
+    
+    <select class="filter-select" id="sortFilter" onchange="sortSites()">
+        <option value="name">नाम के अनुसार</option>
+        <option value="newest">नवीनतम</option>
+        <option value="unesco">यूनेस्को पहले</option>
+    </select>
+</div>
+
+<div class="heritage-grid" id="heritageGrid">
+    {% for site in sites.items %}
+    <div class="heritage-card" onclick="window.location.href='/heritage/site/{{ site.id }}'"
+         data-category="{{ site.category }}"
+         data-country="{{ site.country }}"
+         data-unesco="{{ site.is_unesco }}">
+        <div class="card-image">
+            <span class="card-badge">{{ site.category }}</span>
+            {% if site.is_unesco %}
+            <span class="unesco-badge">यूनेस्को</span>
+            {% endif %}
+        </div>
+        <div class="card-content">
+            <h3 class="card-title">{{ site.name }}</h3>
+            <div class="card-subtitle">
+                <i class="fas fa-map-marker-alt"></i>
+                {{ site.country }}{% if site.state %} • {{ site.state }}{% endif %}
+            </div>
+            <div class="card-meta">
+                {% if site.built_year %}
+                <span><i class="fas fa-calendar"></i> {{ site.built_year }}</span>
+                {% endif %}
+                {% if site.visiting_hours %}
+                <span><i class="fas fa-clock"></i> {{ site.visiting_hours }}</span>
+                {% endif %}
+            </div>
+            <p class="card-description">{{ site.description[:120] }}{% if site.description|length > 120 %}...{% endif %}</p>
+            <div class="card-footer">
+                <span class="explore-btn">और जानें →</span>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-mountain"></i>
+        <h3>कोई धरोहर स्थल नहीं मिला</h3>
+        <p>इस महाद्वीप में अभी कोई स्थल नहीं जोड़ा गया है।</p>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="pagination">
+    {% if sites.has_prev %}
+    <a href="{{ url_for('heritage.continent_view', continent_name=continent, page=sites.prev_num) }}" class="page-btn">← पिछला</a>
+    {% endif %}
+    
+    {% for page_num in sites.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if page_num %}
+            {% if page_num == sites.page %}
+            <span class="page-btn active">{{ page_num }}</span>
+            {% else %}
+            <a href="{{ url_for('heritage.continent_view', continent_name=continent, page=page_num) }}" class="page-btn">{{ page_num }}</a>
+            {% endif %}
+        {% else %}
+            <span class="page-btn" style="border-color:#ccc; color:#ccc;">...</span>
+        {% endif %}
+    {% endfor %}
+    
+    {% if sites.has_next %}
+    <a href="{{ url_for('heritage.continent_view', continent_name=continent, page=sites.next_num) }}" class="page-btn">अगला →</a>
+    {% endif %}
+</div>
+
+<script>
+    function filterByCategory() {
+        const category = document.getElementById('categoryFilter').value;
+        const cards = document.querySelectorAll('.heritage-card');
+        
+        cards.forEach(card => {
+            if (!category || card.dataset.category === category) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function filterByCountry() {
+        const country = document.getElementById('countryFilter').value;
+        const cards = document.querySelectorAll('.heritage-card');
+        
+        cards.forEach(card => {
+            if (!country || card.dataset.country === country) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function sortSites() {
+        const sortBy = document.getElementById('sortFilter').value;
+        const grid = document.getElementById('heritageGrid');
+        const cards = Array.from(document.querySelectorAll('.heritage-card'));
+        
+        cards.sort((a, b) => {
+            if (sortBy === 'name') {
+                return a.querySelector('.card-title').textContent.localeCompare(
+                    b.querySelector('.card-title').textContent
+                );
+            } else if (sortBy === 'unesco') {
+                // UNESCO sites first
+                const aUnesco = a.dataset.unesco === 'True';
+                const bUnesco = b.dataset.unesco === 'True';
+                return bUnesco - aUnesco;
+            }
+            return 0;
+        });
+        
+        cards.forEach(card => grid.appendChild(card));
+    }
+</script>
+{% endblock %}

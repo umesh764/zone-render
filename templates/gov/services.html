@@ -1,0 +1,235 @@
+{% extends 'base.html' %}
+
+{% block title %}सभी सरकारी सेवाएं - HAT PAY{% endblock %}
+
+{% block content %}
+<style>
+    .services-header {
+        background: linear-gradient(135deg, #FF9933, #138808);
+        padding: 50px 0;
+        text-align: center;
+        color: white;
+        margin-bottom: 40px;
+    }
+    
+    .search-section {
+        max-width: 600px;
+        margin: -20px auto 30px;
+        padding: 0 20px;
+    }
+    .search-box {
+        background: white;
+        border-radius: 50px;
+        padding: 5px 15px;
+        display: flex;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    }
+    .search-box input {
+        flex: 1;
+        padding: 12px 20px;
+        border: none;
+        outline: none;
+        border-radius: 50px;
+        font-size: 1rem;
+    }
+    .search-box button {
+        background: #FF9933;
+        border: none;
+        padding: 8px 25px;
+        border-radius: 40px;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .search-box button:hover {
+        background: #138808;
+    }
+    
+    .services-grid {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+    }
+    .service-card {
+        background: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        transition: all 0.3s;
+        cursor: pointer;
+        border: 1px solid #e0e0e0;
+    }
+    .service-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(255,153,51,0.2);
+        border-color: #FF9933;
+    }
+    .service-icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+    .service-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #333;
+    }
+    .service-category {
+        color: #FF9933;
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+        display: inline-block;
+        background: #fff3e0;
+        padding: 3px 12px;
+        border-radius: 20px;
+    }
+    .service-desc {
+        color: #666;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    .service-link {
+        margin-top: 15px;
+        color: #138808;
+        font-weight: bold;
+        display: inline-block;
+    }
+    
+    @media (max-width: 768px) {
+        .services-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="services-header">
+    <div class="container">
+        <h1>🇮🇳 सभी सरकारी सेवाएं</h1>
+        <p>कुल 38+ सेवाएं एक ही प्लेटफॉर्म पर</p>
+    </div>
+</div>
+
+<div class="search-section">
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 सेवा खोजें... (पैन, आधार, पासपोर्ट, जीएसटी, नौकरी)">
+        <button onclick="filterServices()">खोजें</button>
+    </div>
+</div>
+
+<div class="services-grid" id="servicesGrid"></div>
+
+<script>
+    const services = [
+        // वित्त एवं कर
+        { name: "पैन कार्ड", category: "वित्त एवं कर", desc: "पैन कार्ड के लिए आवेदन करें, अपडेट करें या डाउनलोड करें", url: "https://www.incometax.gov.in/", icon: "📄" },
+        { name: "आयकर रिटर्न (ITR)", category: "वित्त एवं कर", desc: "आयकर रिटर्न भरें, स्टेटस चेक करें", url: "https://www.incometax.gov.in/itr", icon: "🛠️" },
+        { name: "जीएसटी (GST)", category: "वित्त एवं कर", desc: "जीएसटी रजिस्ट्रेशन, रिटर्न फाइलिंग, पेमेंट", url: "https://www.gst.gov.in", icon: "🛠️" },
+        { name: "ई-वे बिल", category: "वित्त एवं कर", desc: "माल परिवहन के लिए ई-वे बिल जनरेट करें", url: "https://ewaybill.nic.in", icon: "🛠️" },
+        { name: "ई-इनवॉइस", category: "वित्त एवं कर", desc: "जीएसटी के लिए इलेक्ट्रॉनिक इनवॉइस सिस्टम", url: "https://einvoice1.gst.gov.in", icon: "🛠️" },
+        
+        // पहचान एवं दस्तावेज़
+        { name: "आधार कार्ड", category: "पहचान एवं दस्तावेज़", desc: "आधार कार्ड डाउनलोड करें, अपडेट करें, वेरिफाई करें", url: "https://uidai.gov.in", icon: "📄" },
+        { name: "डिजिलॉकर", category: "पहचान एवं दस्तावेज़", desc: "डिजिटल दस्तावेज़ स्टोर करें और शेयर करें", url: "https://www.digilocker.gov.in", icon: "🛠️" },
+        { name: "मेरी पहचान", category: "पहचान एवं दस्तावेज़", desc: "सिंगल साइन-ऑन सेवा, एक लॉगिन से सभी पोर्टल", url: "https://meripehchaan.gov.in", icon: "🛠️" },
+        
+        // चुनाव एवं लोकतंत्र
+        { name: "वोटर आईडी", category: "चुनाव एवं लोकतंत्र", desc: "वोटर कार्ड बनवाएं, नाम चेक करें, अपडेट करें", url: "https://nvsp.in", icon: "📄" },
+        { name: "वोटर हेल्पलाइन", category: "चुनाव एवं लोकतंत्र", desc: "वोटर से जुड़ी सभी सेवाएं मोबाइल पर", url: "https://voterportal.eci.gov.in", icon: "🛠️" },
+        { name: "माईगव", category: "चुनाव एवं लोकतंत्र", desc: "सरकारी योजनाओं में सुझाव दें, पोल में भाग लें", url: "https://www.mygov.in", icon: "🛠️" },
+        
+        // शिक्षा
+        { name: "दीक्षा (DIKSHA)", category: "शिक्षा", desc: "एक राष्ट्र, एक डिजिटल प्लेटफॉर्म - स्कूली शिक्षा", url: "https://diksha.gov.in", icon: "🛠️" },
+        { name: "ई-ग्रंथालय", category: "शिक्षा", desc: "डिजिटल लाइब्रेरी मैनेजमेंट सिस्टम", url: "https://egranthalaya.nic.in", icon: "🛠️" },
+        { name: "एनपीटीईएल", category: "शिक्षा", desc: "ऑनलाइन कोर्स और सर्टिफिकेशन", url: "https://nptel.ac.in", icon: "🛠️" },
+        { name: "स्कॉलरशिप (NSP)", category: "शिक्षा", desc: "राष्ट्रीय छात्रवृत्ति पोर्टल", url: "https://scholarships.gov.in", icon: "🎯" },
+        { name: "ई-पाठशाला", category: "शिक्षा", desc: "डिजिटल शिक्षा संसाधन, एनसीईआरटी की किताबें", url: "https://epathshala.nic.in", icon: "🛠️" },
+        
+        // रोजगार एवं करियर
+        { name: "नेशनल करियर सर्विस", category: "रोजगार एवं करियर", desc: "सरकारी और प्राइवेट नौकरियां, करियर काउंसलिंग", url: "https://www.ncs.gov.in", icon: "🛠️" },
+        { name: "ई-श्रम", category: "रोजगार एवं करियर", desc: "असंगठित क्षेत्र के श्रमिकों का राष्ट्रीय डेटाबेस", url: "https://eshram.gov.in", icon: "🛠️" },
+        { name: "पीएम कौशल विकास योजना", category: "रोजगार एवं करियर", desc: "स्किल डेवलपमेंट और ट्रेनिंग", url: "https://www.pmkvyofficial.org", icon: "🎯" },
+        { name: "आजीविका (NRLM)", category: "रोजगार एवं करियर", desc: "ग्रामीण गरीबी उन्मूलन और आजीविका मिशन", url: "https://aajeevika.gov.in", icon: "🎯" },
+        
+        // स्वास्थ्य
+        { name: "आयुष्मान भारत", category: "स्वास्थ्य", desc: "आयुष्मान कार्ड बनवाएं, 5 लाख तक का स्वास्थ्य बीमा", url: "https://pmjay.gov.in", icon: "🎯" },
+        { name: "ऑनलाइन रजिस्ट्रेशन (ORS)", category: "स्वास्थ्य", desc: "सरकारी अस्पतालों में ऑनलाइन अपॉइंटमेंट", url: "https://ors.gov.in", icon: "🛠️" },
+        { name: "कोविन (CoWIN)", category: "स्वास्थ्य", desc: "वैक्सीनेशन सर्टिफिकेट डाउनलोड करें", url: "https://www.cowin.gov.in", icon: "🛠️" },
+        
+        // परिवहन
+        { name: "परिवहन (Parivahan)", category: "परिवहन", desc: "ड्राइविंग लाइसेंस, वाहन रजिस्ट्रेशन, ई-चालान", url: "https://parivahan.gov.in", icon: "🛠️" },
+        { name: "सारथी (Sarathi)", category: "परिवहन", desc: "ड्राइविंग लाइसेंस बनवाएं, रिन्यू करें", url: "https://sarathi.parivahan.gov.in", icon: "🛠️" },
+        { name: "वाहन (Vahan)", category: "परिवहन", desc: "वाहन रजिस्ट्रेशन, टैक्स भुगतान, आरसी डाउनलोड", url: "https://vahan.parivahan.gov.in", icon: "🛠️" },
+        
+        // कृषि
+        { name: "साथी (SATHI)", category: "कृषि", desc: "बीज ट्रेसेबिलिटी और प्रमाणीकरण प्रणाली", url: "https://sathi.gov.in", icon: "🛠️" },
+        { name: "ई-एनएएम (eNAM)", category: "कृषि", desc: "राष्ट्रीय कृषि बाजार - ऑनलाइन मंडी", url: "https://enam.gov.in", icon: "🛠️" },
+        
+        // कल्याण एवं योजनाएं
+        { name: "माईस्कीम (myScheme)", category: "कल्याण एवं योजनाएं", desc: "4000+ सरकारी योजनाएं एक ही जगह", url: "https://www.myscheme.gov.in", icon: "🛠️" },
+        { name: "उमंग (UMANG)", category: "कल्याण एवं योजनाएं", desc: "210+ विभागों की 2000+ सेवाएं एक ऐप पर", url: "https://umang.gov.in", icon: "🛠️" },
+        { name: "जीवन प्रमाण", category: "कल्याण एवं योजनाएं", desc: "पेंशनभोगियों के लिए डिजिटल लाइफ सर्टिफिकेट", url: "https://jeevanpramaan.gov.in", icon: "🛠️" },
+        { name: "पीएम स्वनिधि", category: "कल्याण एवं योजनाएं", desc: "स्ट्रीट वेंडर्स के लिए कार्यशील पूंजी ऋण", url: "https://pmsvanidhi.mohua.gov.in", icon: "🎯" },
+        
+        // यात्रा एवं पर्यटन
+        { name: "पासपोर्ट", category: "यात्रा एवं पर्यटन", desc: "पासपोर्ट के लिए अप्लाई करें, अपॉइंटमेंट बुक करें", url: "https://passportindia.gov.in", icon: "📄" },
+        { name: "भारत ऑनलाइन वीज़ा", category: "यात्रा एवं पर्यटन", desc: "भारत आने के लिए ई-वीज़ा आवेदन", url: "https://indianvisaonline.gov.in", icon: "🛠️" },
+        
+        // न्याय एवं कानून
+        { name: "ई-कोर्ट्स", category: "न्याय एवं कानून", desc: "केस स्टेटस देखें, ऑर्डर डाउनलोड करें", url: "https://ecourts.gov.in", icon: "🛠️" },
+        { name: "ई-फाइलिंग", category: "न्याय एवं कानून", desc: "कोर्ट में इलेक्ट्रॉनिक केस फाइलिंग", url: "https://efiling.ecourts.gov.in", icon: "🛠️" }
+    ];
+    
+    function displayServices(servicesList) {
+        const grid = document.getElementById('servicesGrid');
+        let html = '';
+        
+        servicesList.forEach(service => {
+            html += `
+                <div class="service-card" onclick="window.open('${service.url}', '_blank')">
+                    <div class="service-icon">${service.icon}</div>
+                    <div class="service-category">${service.category}</div>
+                    <div class="service-title">${service.name}</div>
+                    <div class="service-desc">${service.desc}</div>
+                    <div class="service-link">सेवा लें →</div>
+                </div>
+            `;
+        });
+        
+        grid.innerHTML = html;
+    }
+    
+    function filterServices() {
+        const query = document.getElementById('searchInput').value.toLowerCase().trim();
+        
+        if (query === "") {
+            displayServices(services);
+            return;
+        }
+        
+        const filtered = services.filter(service => 
+            service.name.toLowerCase().includes(query) ||
+            service.category.toLowerCase().includes(query) ||
+            service.desc.toLowerCase().includes(query)
+        );
+        
+        displayServices(filtered);
+        
+        if (filtered.length === 0) {
+            document.getElementById('servicesGrid').innerHTML = '<div style="text-align: center; padding: 50px; grid-column: 1/-1;">❌ कोई सेवा नहीं मिली। कृपया दूसरा शब्द सर्च करें।</div>';
+        }
+    }
+    
+    // Initial load
+    displayServices(services);
+    
+    // Enter key search
+    document.getElementById('searchInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            filterServices();
+        }
+    });
+</script>
+{% endblock %}

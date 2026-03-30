@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}भारत की विरासत - हेरिटेज साइट्स{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">🏛️ भारत की विरासत</h1>
+    
+    <div class="row">
+        {% for site in sites %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow">
+                {% if site.main_image %}
+                <img src="{{ site.main_image }}" class="card-img-top" alt="{{ site.name }}" style="height: 200px; object-fit: cover; width: 100%;">
+                {% else %}
+                <div class="bg-secondary text-white d-flex justify-content-center align-items-center" style="height: 200px;">
+                    <span>कोई छवि नहीं</span>
+                </div>
+                {% endif %}
+                
+                <div class="card-body">
+                    <h5 class="card-title">{{ site.name }}</h5>
+                    <p class="card-text">{{ site.description[:100] if site.description else 'विवरण उपलब्ध नहीं' }}...</p>
+                    
+                    <p><strong>📍 स्थान:</strong> {{ site.location if site.location else 'जानकारी नहीं' }}, {{ site.state if site.state else '' }}</p>
+                    <p><strong>🏛️ श्रेणी:</strong> {{ site.category if site.category else 'सामान्य' }}</p>
+                    
+                    {% if site.is_unesco %}
+                    <span class="badge bg-success">यूनेस्को विश्व धरोहर</span>
+                    {% endif %}
+                    
+                    {% if site.country != 'भारत' %}
+                    <span class="badge bg-info">{{ site.country }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="card-footer bg-transparent">
+                    <a href="/heritage/site/{{ site.id }}" class="btn btn-primary w-100">और देखें</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+.card {
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2) !important;
+}
+.card-img-top {
+    border-bottom: 2px solid #f8f9fa;
+}
+.badge {
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    margin-right: 5px;
+}
+</style>
+{% endblock %}

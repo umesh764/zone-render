@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}My Portfolio{% endblock %}
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto; padding: 20px;">
+    <h1 style="text-align: center;">📊 My Portfolio</h1>
+    
+    {% if stocks %}
+    <table style="width: 100%; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden;">
+        <thead style="background: #667eea; color: white;">
+            <tr>
+                <th style="padding: 12px;">Symbol</th>
+                <th style="padding: 12px;">Quantity</th>
+                <th style="padding: 12px;">Invested</th>
+                <th style="padding: 12px;">Current Price</th>
+                <th style="padding: 12px;">Current Value</th>
+                <th style="padding: 12px;">P&L</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for stock in stocks %}
+            <tr style="border-bottom: 1px solid #ddd;">
+                <td style="padding: 12px;"><strong>{{ stock.symbol }}</strong></td>
+                <td style="padding: 12px;">{{ stock.quantity }}</td>
+                <td style="padding: 12px;">₹{{ stock.invested }}</td>
+                <td style="padding: 12px;">₹{{ stock.current_price }}</td>
+                <td style="padding: 12px;">₹{{ (stock.quantity * stock.current_price) | round(2) }}</td>
+                <td style="padding: 12px; {% if (stock.quantity * stock.current_price) > stock.invested %}color: green;{% else %}color: red;{% endif %}">
+                    ₹{{ ((stock.quantity * stock.current_price) - stock.invested) | round(2) }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="text-align: center;">No stocks in portfolio. <a href="/market-live/all-stocks">Start buying!</a></p>
+    {% endif %}
+    
+    <div style="text-align: center; margin-top: 20px;">
+        <a href="/market-live/all-stocks">← Back to Market</a>
+    </div>
+</div>
+{% endblock %}
