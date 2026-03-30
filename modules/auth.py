@@ -162,8 +162,9 @@ def verify_otp(contact, code):
     except Exception as e:
         print(f"OTP verify error: {e}")
         return False
-# Add this after app = Flask(__name__)
 
+
+# Add this after app = Flask(__name__)  ← YEH DELETE KARO
 
 # Google OAuth
 google = oauth.register(
@@ -322,3 +323,37 @@ def handle_social_login(email, name, provider):
     login_user(user)
     flash(f'Logged in with {provider}!', 'success')
     return redirect(url_for('dashboard'))
+def init_oauth(app):
+    global oauth
+    oauth = OAuth(app)
+    
+    # Google OAuth
+    oauth.register(
+        name='google',
+        client_id=os.environ.get('GOOGLE_CLIENT_ID'),
+        client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
+        server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+        client_kwargs={'scope': 'openid email profile'}
+    )
+    
+    # Facebook OAuth
+    oauth.register(
+        name='facebook',
+        client_id=os.environ.get('FACEBOOK_CLIENT_ID'),
+        client_secret=os.environ.get('FACEBOOK_CLIENT_SECRET'),
+        authorize_url='https://www.facebook.com/v18.0/dialog/oauth',
+        access_token_url='https://graph.facebook.com/v18.0/oauth/access_token',
+        api_base_url='https://graph.facebook.com/v18.0/',
+        client_kwargs={'scope': 'email public_profile'}
+    )
+    
+    # GitHub OAuth
+    oauth.register(
+        name='github',
+        client_id=os.environ.get('GITHUB_CLIENT_ID'),
+        client_secret=os.environ.get('GITHUB_CLIENT_SECRET'),
+        authorize_url='https://github.com/login/oauth/authorize',
+        access_token_url='https://github.com/login/oauth/access_token',
+        api_base_url='https://api.github.com/',
+        client_kwargs={'scope': 'user:email'}
+    )
