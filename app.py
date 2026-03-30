@@ -21,10 +21,21 @@ bcrypt = Bcrypt()
 limiter = None  # Global variable
 
 def create_app():
-    global limiter
     app = Flask(__name__)
-    app.config['SECRET_KEY'] = 'zone-key'
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///zone.db'
+    global limiter
+    
+    # ========== SECRET KEY & SESSION CONFIG ==========
+    app.secret_key = os.environ.get('SECRET_KEY', 'dev-secret-key-2024')
+    
+    app.config.update(
+        SESSION_COOKIE_SECURE=True,      # HTTPS only
+        SESSION_COOKIE_HTTPONLY=True,
+        SESSION_COOKIE_SAMESITE='Lax',
+        PERMANENT_SESSION_LIFETIME=3600
+    )
+    
+    # ========== DATABASE CONFIG ==========
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///zone.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     
     # CSRF Protection
@@ -54,14 +65,6 @@ def create_app():
         response.headers['X-Frame-Options'] = 'SAMEORIGIN'
         response.headers['X-XSS-Protection'] = '1; mode=block'
         return response
-     
-    # Session Security
-    app.config.update(
-        SESSION_COOKIE_SECURE=True,
-        SESSION_COOKIE_HTTPONLY=True,
-        SESSION_COOKIE_SAMESITE='Lax',
-        PERMANENT_SESSION_LIFETIME=3600
-    )
     
     # Initialize extensions
     db.init_app(app)
@@ -83,7 +86,7 @@ def create_app():
         db.create_all()
     
     # Import blueprints (yahan import karo)
-    from modules.auth import auth_bp
+    from modules.auth import auth_bp, init_oauth
     from modules.payment import payment_bp
     from modules.travel import travel_bp
     from modules.fastag import fastag_bp
@@ -103,9 +106,8 @@ def create_app():
     from modules.market_live import market_live_bp
     from modules.simple_market import simple_market_bp
     from news_notifier import news_bp, start_news_thread
-    from modules.auth import auth_bp, init_oauth
 
-     # Initialize OAuth for social login
+    # Initialize OAuth for social login
     init_oauth(app)
 
     # Register blueprints
@@ -129,11 +131,11 @@ def create_app():
     app.register_blueprint(market_live_bp)
     app.register_blueprint(simple_market_bp)
     app.register_blueprint(news_bp) 
-     
- 
-    # 🆕 START NEWS THREAD - YEH LINE ADD KARO
+    
+    # 🆕 START NEWS THREAD
     start_news_thread()
-    # Routes
+    
+    # ========== ROUTES ==========
     @app.route('/')
     def index():
         return render_template('index.html', title='Zone Home')
