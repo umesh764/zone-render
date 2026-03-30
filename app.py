@@ -129,7 +129,7 @@ def create_app():
     app.register_blueprint(market_live_bp)
     app.register_blueprint(simple_market_bp)
     app.register_blueprint(news_bp) 
-    app.register_blueprint(auth_bp)  
+     
  
     # 🆕 START NEWS THREAD - YEH LINE ADD KARO
     start_news_thread()
