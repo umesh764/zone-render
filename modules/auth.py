@@ -120,6 +120,7 @@ def verify_otp():
             flash('Invalid or expired OTP', 'error')
     
     return render_template('verify-otp.html')
+
 # Twilio client initialization
 twilio_client = Client(
     os.environ.get('TWILIO_ACCOUNT_SID'),
@@ -163,39 +164,43 @@ def verify_otp(contact, code):
         print(f"OTP verify error: {e}")
         return False
 
+# OAuth setup
+oauth = None  # Global variable
 
-# Add this after app = Flask(__name__)  ← YEH DELETE KARO
-
-# Google OAuth
-google = oauth.register(
-    name='google',
-    client_id=os.environ.get('GOOGLE_CLIENT_ID'),
-    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
-    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
-    client_kwargs={'scope': 'openid email profile'}
-)
-
-# Facebook OAuth
-facebook = oauth.register(
-    name='facebook',
-    client_id=os.environ.get('FACEBOOK_CLIENT_ID'),
-    client_secret=os.environ.get('FACEBOOK_CLIENT_SECRET'),
-    authorize_url='https://www.facebook.com/v18.0/dialog/oauth',
-    access_token_url='https://graph.facebook.com/v18.0/oauth/access_token',
-    api_base_url='https://graph.facebook.com/v18.0/',
-    client_kwargs={'scope': 'email public_profile'}
-)
-
-# GitHub OAuth
-github = oauth.register(
-    name='github',
-    client_id=os.environ.get('GITHUB_CLIENT_ID'),
-    client_secret=os.environ.get('GITHUB_CLIENT_SECRET'),
-    authorize_url='https://github.com/login/oauth/authorize',
-    access_token_url='https://github.com/login/oauth/access_token',
-    api_base_url='https://api.github.com/',
-    client_kwargs={'scope': 'user:email'}
-)
+def init_oauth(app):
+    global oauth
+    oauth = OAuth(app)
+    
+    # Google OAuth
+    oauth.register(
+        name='google',
+        client_id=os.environ.get('GOOGLE_CLIENT_ID'),
+        client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
+        server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+        client_kwargs={'scope': 'openid email profile'}
+    )
+    
+    # Facebook OAuth
+    oauth.register(
+        name='facebook',
+        client_id=os.environ.get('FACEBOOK_CLIENT_ID'),
+        client_secret=os.environ.get('FACEBOOK_CLIENT_SECRET'),
+        authorize_url='https://www.facebook.com/v18.0/dialog/oauth',
+        access_token_url='https://graph.facebook.com/v18.0/oauth/access_token',
+        api_base_url='https://graph.facebook.com/v18.0/',
+        client_kwargs={'scope': 'email public_profile'}
+    )
+    
+    # GitHub OAuth
+    oauth.register(
+        name='github',
+        client_id=os.environ.get('GITHUB_CLIENT_ID'),
+        client_secret=os.environ.get('GITHUB_CLIENT_SECRET'),
+        authorize_url='https://github.com/login/oauth/authorize',
+        access_token_url='https://github.com/login/oauth/access_token',
+        api_base_url='https://api.github.com/',
+        client_kwargs={'scope': 'user:email'}
+    )
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 @limiter.limit("5 per minute")
@@ -221,6 +226,7 @@ def logout():
     logout_user()
     flash('You have been logged out', 'success')
     return redirect(url_for('auth.login'))
+
 @auth_bp.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
@@ -248,9 +254,11 @@ def resend_otp():
         
         flash('New OTP sent successfully', 'success')
     return redirect(url_for('auth.verify_otp'))
-# Google Login
+
+# Google Login Routes
 @auth_bp.route('/login/google')
 def google_login():
+    global oauth
     redirect_uri = url_for('auth.google_authorize', _external=True)
     return oauth.google.authorize_redirect(redirect_uri)
 
@@ -264,9 +272,10 @@ def google_authorize():
     
     return handle_social_login(email, name, 'google')
 
-# Facebook Login
+# Facebook Login Routes
 @auth_bp.route('/login/facebook')
 def facebook_login():
+    global oauth
     redirect_uri = url_for('auth.facebook_authorize', _external=True)
     return oauth.facebook.authorize_redirect(redirect_uri)
 
@@ -281,9 +290,10 @@ def facebook_authorize():
     
     return handle_social_login(email, name, 'facebook')
 
-# GitHub Login
+# GitHub Login Routes
 @auth_bp.route('/login/github')
 def github_login():
+    global oauth
     redirect_uri = url_for('auth.github_authorize', _external=True)
     return oauth.github.authorize_redirect(redirect_uri)
 
@@ -323,37 +333,3 @@ def handle_social_login(email, name, provider):
     login_user(user)
     flash(f'Logged in with {provider}!', 'success')
     return redirect(url_for('dashboard'))
-def init_oauth(app):
-    global oauth
-    oauth = OAuth(app)
-    
-    # Google OAuth
-    oauth.register(
-        name='google',
-        client_id=os.environ.get('GOOGLE_CLIENT_ID'),
-        client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
-        server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
-        client_kwargs={'scope': 'openid email profile'}
-    )
-    
-    # Facebook OAuth
-    oauth.register(
-        name='facebook',
-        client_id=os.environ.get('FACEBOOK_CLIENT_ID'),
-        client_secret=os.environ.get('FACEBOOK_CLIENT_SECRET'),
-        authorize_url='https://www.facebook.com/v18.0/dialog/oauth',
-        access_token_url='https://graph.facebook.com/v18.0/oauth/access_token',
-        api_base_url='https://graph.facebook.com/v18.0/',
-        client_kwargs={'scope': 'email public_profile'}
-    )
-    
-    # GitHub OAuth
-    oauth.register(
-        name='github',
-        client_id=os.environ.get('GITHUB_CLIENT_ID'),
-        client_secret=os.environ.get('GITHUB_CLIENT_SECRET'),
-        authorize_url='https://github.com/login/oauth/authorize',
-        access_token_url='https://github.com/login/oauth/access_token',
-        api_base_url='https://api.github.com/',
-        client_kwargs={'scope': 'user:email'}
-    )
