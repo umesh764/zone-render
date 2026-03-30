@@ -163,7 +163,7 @@ def verify_otp(contact, code):
         print(f"OTP verify error: {e}")
         return False
 # Add this after app = Flask(__name__)
-oauth = OAuth(app)
+
 
 # Google OAuth
 google = oauth.register(
