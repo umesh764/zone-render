@@ -103,6 +103,10 @@ def create_app():
     from modules.market_live import market_live_bp
     from modules.simple_market import simple_market_bp
     from news_notifier import news_bp, start_news_thread
+    from modules.auth import auth_bp, init_oauth
+
+     # Initialize OAuth for social login
+    init_oauth(app)
 
     # Register blueprints
     app.register_blueprint(auth_bp)
