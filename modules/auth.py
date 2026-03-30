@@ -172,7 +172,7 @@ def init_oauth(app):
     oauth = OAuth(app)
     
     # Google OAuth
-   oauth.register(
+    oauth.register(
         name='google',
         client_id=os.environ.get('GOOGLE_CLIENT_ID'),
         client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
@@ -314,15 +314,13 @@ def handle_social_login(email, name, provider):
         flash(f'Could not get email from {provider}. Please try again.', 'danger')
         return redirect(url_for('auth.login'))
     
-    # Check if user exists
     user = User.query.filter_by(email=email).first()
     
     if not user:
-        # Create new user
         user = User(
             name=name or email.split('@')[0],
             email=email,
-            password=None,  # Social login users don't need password
+            password=None,
             is_verified=True,
             provider=provider
         )
@@ -332,4 +330,4 @@ def handle_social_login(email, name, provider):
     
     login_user(user)
     flash(f'Logged in with {provider}!', 'success')
-    return redirect(url_for('payment.dashboard'))
+    return redirect(url_for('payment.dashboard'))  # ← यह line change करें
