@@ -1,3 +1,4 @@
+from authlib.integrations.flask_client import OAuth
 import os
 from twilio.rest import Client
 from flask_mail import Mail, Message
@@ -161,6 +162,39 @@ def verify_otp(contact, code):
     except Exception as e:
         print(f"OTP verify error: {e}")
         return False
+# Add this after app = Flask(__name__)
+oauth = OAuth(app)
+
+# Google OAuth
+google = oauth.register(
+    name='google',
+    client_id=os.environ.get('GOOGLE_CLIENT_ID'),
+    client_secret=os.environ.get('GOOGLE_CLIENT_SECRET'),
+    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+    client_kwargs={'scope': 'openid email profile'}
+)
+
+# Facebook OAuth
+facebook = oauth.register(
+    name='facebook',
+    client_id=os.environ.get('FACEBOOK_CLIENT_ID'),
+    client_secret=os.environ.get('FACEBOOK_CLIENT_SECRET'),
+    authorize_url='https://www.facebook.com/v18.0/dialog/oauth',
+    access_token_url='https://graph.facebook.com/v18.0/oauth/access_token',
+    api_base_url='https://graph.facebook.com/v18.0/',
+    client_kwargs={'scope': 'email public_profile'}
+)
+
+# GitHub OAuth
+github = oauth.register(
+    name='github',
+    client_id=os.environ.get('GITHUB_CLIENT_ID'),
+    client_secret=os.environ.get('GITHUB_CLIENT_SECRET'),
+    authorize_url='https://github.com/login/oauth/authorize',
+    access_token_url='https://github.com/login/oauth/access_token',
+    api_base_url='https://api.github.com/',
+    client_kwargs={'scope': 'user:email'}
+)
 
 @auth_bp.route('/login', methods=['GET', 'POST'])
 @limiter.limit("5 per minute")
@@ -186,6 +220,14 @@ def logout():
     logout_user()
     flash('You have been logged out', 'success')
     return redirect(url_for('auth.login'))
+@auth_bp.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        # Add your forgot password logic here
+        flash('Password reset link sent to your email', 'success')
+        return redirect(url_for('auth.login'))
+    return render_template('forgot_password.html')
 
 @auth_bp.route('/resend-otp')
 def resend_otp():
@@ -205,3 +247,78 @@ def resend_otp():
         
         flash('New OTP sent successfully', 'success')
     return redirect(url_for('auth.verify_otp'))
+# Google Login
+@auth_bp.route('/login/google')
+def google_login():
+    redirect_uri = url_for('auth.google_authorize', _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+@auth_bp.route('/login/google/authorized')
+def google_authorize():
+    token = oauth.google.authorize_access_token()
+    user_info = oauth.google.parse_id_token(token)
+    
+    email = user_info.get('email')
+    name = user_info.get('name')
+    
+    return handle_social_login(email, name, 'google')
+
+# Facebook Login
+@auth_bp.route('/login/facebook')
+def facebook_login():
+    redirect_uri = url_for('auth.facebook_authorize', _external=True)
+    return oauth.facebook.authorize_redirect(redirect_uri)
+
+@auth_bp.route('/login/facebook/authorized')
+def facebook_authorize():
+    token = oauth.facebook.authorize_access_token()
+    resp = oauth.facebook.get('me?fields=id,name,email')
+    user_info = resp.json()
+    
+    email = user_info.get('email')
+    name = user_info.get('name')
+    
+    return handle_social_login(email, name, 'facebook')
+
+# GitHub Login
+@auth_bp.route('/login/github')
+def github_login():
+    redirect_uri = url_for('auth.github_authorize', _external=True)
+    return oauth.github.authorize_redirect(redirect_uri)
+
+@auth_bp.route('/login/github/authorized')
+def github_authorize():
+    token = oauth.github.authorize_access_token()
+    resp = oauth.github.get('user')
+    user_info = resp.json()
+    
+    email = user_info.get('email')
+    name = user_info.get('name', user_info.get('login'))
+    
+    return handle_social_login(email, name, 'github')
+
+# Common function to handle all social logins
+def handle_social_login(email, name, provider):
+    if not email:
+        flash(f'Could not get email from {provider}. Please try again.', 'danger')
+        return redirect(url_for('auth.login'))
+    
+    # Check if user exists
+    user = User.query.filter_by(email=email).first()
+    
+    if not user:
+        # Create new user
+        user = User(
+            name=name or email.split('@')[0],
+            email=email,
+            password=None,  # Social login users don't need password
+            is_verified=True,
+            provider=provider
+        )
+        db.session.add(user)
+        db.session.commit()
+        flash(f'Account created with {provider}!', 'success')
+    
+    login_user(user)
+    flash(f'Logged in with {provider}!', 'success')
+    return redirect(url_for('dashboard'))
