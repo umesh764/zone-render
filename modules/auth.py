@@ -120,13 +120,21 @@ def verify_otp():
             flash('Invalid or expired OTP', 'error')
     
     return render_template('verify-otp.html')
+# =====================================================
+# TWILIO CREDENTIALS - DIRECT VALUES (UPDATE HERE)
+# =====================================================
+# TODO: Apna real Auth Token Twilio Console se copy karein
+TWILIO_ACCOUNT_SID = "AC445925e6efe3cc63f6b5f0f907988e7f"
+TWILIO_AUTH_TOKEN = "d6bdccbd2816c12da6ab2222ac831f52"  # <--- YAHAN APNA REAL AUTH TOKEN DALO
+VERIFY_SERVICE_SID = "VAa8907e2d93d29657cda136e8773347e7"
+# =====================================================
 
 # Twilio client initialization
 twilio_client = Client(
-    os.environ.get('TWILIO_ACCOUNT_SID'),
-    os.environ.get('TWILIO_AUTH_TOKEN')
+    TWILIO_ACCOUNT_SID,
+    TWILIO_AUTH_TOKEN
 )
-VERIFY_SERVICE_SID = os.environ.get('TWILIO_VERIFY_SERVICE')
+# VERIFY_SERVICE_SID = os.environ.get('TWILIO_VERIFY_SERVICE')
 
 def send_whatsapp_otp(phone_number):
     """WhatsApp par OTP bhejne ke liye"""
