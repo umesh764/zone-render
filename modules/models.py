@@ -794,8 +794,7 @@ class LocalShopReview(db.Model):
     helpful_count = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
-    user = db.relationship('User', backref='shop_reviews')
-class User(db.Model, UserMixin):
+    class User(db.Model, UserMixin):
     __table_args__ = {'extend_existing': True}
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
@@ -806,7 +805,6 @@ class User(db.Model, UserMixin):
     provider = db.Column(db.String(50))
     provider_id = db.Column(db.String(100))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
 
 class LocalCategory(db.Model):
     """Categories for local market"""
