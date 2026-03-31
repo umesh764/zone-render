@@ -787,24 +787,14 @@ class LocalShopReview(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     shop_id = db.Column(db.Integer, db.ForeignKey('local_shops.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     rating = db.Column(db.Integer)  # 1-5
     review = db.Column(db.Text)
     images = db.Column(db.Text)  # JSON array of image URLs
     helpful_count = db.Column(db.Integer, default=0)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    class User(db.Model, UserMixin):
-    __table_args__ = {'extend_existing': True}
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    email = db.Column(db.String(100), unique=True)
-    phone = db.Column(db.String(20), unique=True)
-    password = db.Column(db.String(200))
-    is_verified = db.Column(db.Boolean, default=False)
-    provider = db.Column(db.String(50))
-    provider_id = db.Column(db.String(100))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+# ========== USER CLASS - SIRF EK BAAR, TOP PAR HONA CHAHIYE ==========
 
 class LocalCategory(db.Model):
     """Categories for local market"""
