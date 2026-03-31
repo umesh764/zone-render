@@ -133,7 +133,7 @@ def send_whatsapp_otp(phone_number):
     try:
         verification = twilio_client.verify.services(VERIFY_SERVICE_SID).verifications.create(
             to=phone_number,
-            channel='whatsapp'
+            channel='sms'
         )
         return verification.status == 'pending'
     except Exception as e:
