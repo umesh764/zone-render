@@ -131,8 +131,8 @@ VERIFY_SERVICE_SID = "VAa8907e2d93d29657cda136e8773347e7"
 
 # Twilio client initialization
 twilio_client = Client(
-    TWILIO_ACCOUNT_SID,
-    TWILIO_AUTH_TOKEN
+    os.environ.get('TWILIO_ACCOUNT_SID'),
+    os.environ.get('TWILIO_AUTH_TOKEN')
 )
 # VERIFY_SERVICE_SID = os.environ.get('TWILIO_VERIFY_SERVICE')
 
