@@ -166,10 +166,7 @@ def create_app():
     @app.route('/services')
     def services():
         return render_template('services.html', title='Our Services')
-        # Radio Route
-    @app.route('/radio')
-    def radio():
-        return render_template('radio.html')
+   
 
     @app.route('/api/select-plan', methods=['POST'])
     def select_plan():
@@ -248,6 +245,12 @@ def create_app():
     @app.route('/bharat/')
     def bharat_redirect():
         return redirect('/heritage/')
+    
+        # ========== LIVE RADIO ROUTE ==========
+    @app.route('/radio')
+    def radio():
+        return render_template('radio.html')
+    
 
     return app
 

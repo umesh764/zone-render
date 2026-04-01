@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Radio - Zone</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        .radio-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .radio-icon {
+            font-size: 60px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .station-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 8px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .station-btn:hover {
+            transform: scale(1.05);
+        }
+        audio {
+            width: 100%;
+            margin-top: 20px;
+        }
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            color: #667eea;
+            text-decoration: none;
+        }
+        .now-playing {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="radio-container">
+        <div class="radio-icon">📻</div>
+        <h2>Live Radio</h2>
+        
+        <div class="now-playing" id="nowPlaying">
+            Select a station to listen
+        </div>
+        
+        <div>
+            <button class="station-btn" onclick="playRadio('https://stream.zeno.fm/2z0k4n7y9p8uv', 'Hindi Hits')">
+                🎵 Hindi Hits
+            </button>
+            <button class="station-btn" onclick="playRadio('https://stream.zeno.fm/5v0c8q3k6f8uv', 'Bollywood Gold')">
+                🎧 Bollywood Gold
+            </button>
+            <button class="station-btn" onclick="playRadio('https://stream.zeno.fm/6x1d9r4m7f8uv', 'Devotional')">
+                🙏 Devotional
+            </button>
+            <button class="station-btn" onclick="playRadio('https://stream.zeno.fm/8y2e0s5n8f8uv', 'Romantic')">
+                ❤️ Romantic
+            </button>
+            <button class="station-btn" onclick="playRadio('https://stream.zeno.fm/9z3f1t6o9f8uv', 'News Radio')">
+                📰 News Radio
+            </button>
+        </div>
+        
+        <audio id="radioPlayer" controls></audio>
+        
+        <a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+    </div>
+    
+    <script>
+        function playRadio(url, stationName) {
+            const player = document.getElementById('radioPlayer');
+            const nowPlaying = document.getElementById('nowPlaying');
+            player.src = url;
+            player.play();
+            nowPlaying.innerHTML = '🎙️ Now Playing: ' + stationName;
+        }
+    </script>
+</body>
+</html>
