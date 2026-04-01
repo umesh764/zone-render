@@ -3,107 +3,417 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Radio - Zone</title>
+    <title>All India Radio - Zone</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3b 100%);
+            min-height: 100vh;
             padding: 20px;
         }
+        
         .radio-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .radio-header {
             background: white;
             border-radius: 20px;
-            padding: 30px;
-            max-width: 500px;
-            width: 100%;
+            padding: 25px;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
+        
+        .radio-header h1 {
+            color: #1a472a;
+            font-size: 28px;
+        }
+        
         .radio-icon {
-            font-size: 60px;
+            font-size: 50px;
             animation: pulse 2s infinite;
         }
+        
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
         }
-        .station-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            margin: 8px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 16px;
+        
+        .now-playing-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8edf2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            border-left: 5px solid #ff6b35;
         }
-        .station-btn:hover {
-            transform: scale(1.05);
+        
+        .station-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a472a;
+            margin: 10px 0;
         }
+        
+        .station-category {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .player-controls {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
         audio {
             width: 100%;
+            border-radius: 50px;
+            margin: 15px 0;
+        }
+        
+        audio::-webkit-media-controls-panel {
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3b 100%);
+        }
+        
+        .stations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
             margin-top: 20px;
         }
+        
+        .station-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid #e0e0e0;
+            text-align: center;
+        }
+        
+        .station-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-color: #ff6b35;
+        }
+        
+        .station-card.active {
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3b 100%);
+            color: white;
+            border-color: #ff6b35;
+        }
+        
+        .station-card.active .station-category {
+            color: #ffd966;
+        }
+        
+        .station-icon {
+            font-size: 35px;
+            margin-bottom: 10px;
+        }
+        
+        .station-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .station-freq {
+            font-size: 12px;
+            color: #ff6b35;
+            margin-top: 5px;
+        }
+        
+        .station-card.active .station-freq {
+            color: #ffd966;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .ctrl-btn {
+            background: linear-gradient(135deg, #1a472a 0%, #2d5a3b 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .ctrl-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
         .back-btn {
             display: inline-block;
             margin-top: 20px;
-            color: #667eea;
+            color: white;
             text-decoration: none;
+            background: rgba(0,0,0,0.5);
+            padding: 10px 20px;
+            border-radius: 25px;
         }
-        .now-playing {
-            background: #f0f0f0;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 20px 0;
+        
+        @media (max-width: 600px) {
+            .stations-grid {
+                grid-template-columns: 1fr;
+            }
+            .station-name {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="radio-container">
-        <div class="radio-icon">📻</div>
-        <h2>Live Radio</h2>
-        
-        <div class="now-playing" id="nowPlaying">
-            Select a station to listen
+        <div class="radio-header">
+            <div class="radio-icon">🇮🇳📻</div>
+            <h1>Akashvani | All India Radio</h1>
+            <p>भारत की आवाज़ | Voice of India</p>
         </div>
         
-        <div>
-            <button class="station-btn" onclick="playRadio('https://stream.zeno.fm/2z0k4n7y9p8uv', 'Hindi Hits')">
-                🎵 Hindi Hits
-            </button>
-            <button class="station-btn" onclick="playRadio('https://stream.zeno.fm/5v0c8q3k6f8uv', 'Bollywood Gold')">
-                🎧 Bollywood Gold
-            </button>
-            <button class="station-btn" onclick="playRadio('https://stream.zeno.fm/6x1d9r4m7f8uv', 'Devotional')">
-                🙏 Devotional
-            </button>
-            <button class="station-btn" onclick="playRadio('https://stream.zeno.fm/8y2e0s5n8f8uv', 'Romantic')">
-                ❤️ Romantic
-            </button>
-            <button class="station-btn" onclick="playRadio('https://stream.zeno.fm/9z3f1t6o9f8uv', 'News Radio')">
-                📰 News Radio
-            </button>
+        <div class="now-playing-card">
+            <div style="font-size: 30px;">🎙️</div>
+            <div class="station-name" id="currentStationName">Vividh Bharati</div>
+            <div class="station-category" id="currentStationCat">All India Radio</div>
+            <div style="margin-top: 10px;">
+                <span id="playStatus">🔴 LIVE</span>
+            </div>
         </div>
         
-        <audio id="radioPlayer" controls></audio>
+        <div class="player-controls">
+            <audio id="radioPlayer" controls autoplay>
+                Your browser does not support audio.
+            </audio>
+            
+            <div class="control-buttons">
+                <button class="ctrl-btn" onclick="playCurrentStation()">
+                    <span>▶️ Play</span>
+                </button>
+                <button class="ctrl-btn" onclick="pauseRadio()">
+                    <span>⏸️ Pause</span>
+                </button>
+                <button class="ctrl-btn" onclick="stopRadio()">
+                    <span>⏹️ Stop</span>
+                </button>
+            </div>
+        </div>
         
-        <a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+        <h3 style="color: white; margin: 20px 0 10px 0;">📻 Choose Your Station</h3>
+        <div class="stations-grid" id="stationsGrid">
+            <!-- Stations will be loaded here -->
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/dashboard" class="back-btn">← Back to Dashboard</a>
+        </div>
     </div>
     
     <script>
-        function playRadio(url, stationName) {
-            const player = document.getElementById('radioPlayer');
-            const nowPlaying = document.getElementById('nowPlaying');
-            player.src = url;
-            player.play();
-            nowPlaying.innerHTML = '🎙️ Now Playing: ' + stationName;
+        // All India Radio - Working Stations
+        const stations = [
+            {
+                name: "Vividh Bharati",
+                url: "https://air.pc.cdn.bitgravity.com/air/live/pbaudio014/playlist.m3u8",
+                icon: "🎵",
+                freq: "National",
+                category: "Entertainment"
+            },
+            {
+                name: "AIR FM Gold",
+                url: "https://air.pc.cdn.bitgravity.com/air/live/pbaudio036/playlist.m3u8",
+                icon: "🥇",
+                freq: "100.1 FM",
+                category: "Classic Hits"
+            },
+            {
+                name: "AIR FM Rainbow",
+                url: "https://air.pc.cdn.bitgravity.com/air/live/pbaudio037/playlist.m3u8",
+                icon: "🌈",
+                freq: "102.6 FM",
+                category: "Youth"
+            },
+            {
+                name: "AIR News",
+                url: "https://air.pc.cdn.bitgravity.com/air/live/pbaudio038/playlist.m3u8",
+                icon: "📰",
+                freq: "National",
+                category: "News"
+            },
+            {
+                name: "Gyan Vani",
+                url: "https://air.pc.cdn.bitgravity.com/air/live/pbaudio041/playlist.m3u8",
+                icon: "📚",
+                freq: "105.6 FM",
+                category: "Educational"
+            },
+            {
+                name: "AIR Delhi",
+                url: "https://air.pc.cdn.bitgravity.com/air/live/pbaudio001/playlist.m3u8",
+                icon: "🏛️",
+                freq: "102.6 FM",
+                category: "Regional"
+            },
+            {
+                name: "AIR Mumbai",
+                url: "https://air.pc.cdn.bitgravity.com/air/live/pbaudio002/playlist.m3u8",
+                icon: "🌊",
+                freq: "107.1 FM",
+                category: "Regional"
+            },
+            {
+                name: "AIR Kolkata",
+                url: "https://air.pc.cdn.bitgravity.com/air/live/pbaudio003/playlist.m3u8",
+                icon: "🎭",
+                freq: "100.2 FM",
+                category: "Regional"
+            },
+            {
+                name: "AIR Chennai",
+                url: "https://air.pc.cdn.bitgravity.com/air/live/pbaudio004/playlist.m3u8",
+                icon: "🎨",
+                freq: "101.4 FM",
+                category: "Regional"
+            },
+            {
+                name: "AIR Lucknow",
+                url: "https://air.pc.cdn.bitgravity.com/air/live/pbaudio005/playlist.m3u8",
+                icon: "🕌",
+                freq: "100.7 FM",
+                category: "Regional"
+            }
+        ];
+        
+        let currentStation = stations[0];
+        let player = document.getElementById('radioPlayer');
+        
+        function loadStations() {
+            const grid = document.getElementById('stationsGrid');
+            grid.innerHTML = '';
+            
+            stations.forEach((station, index) => {
+                const card = document.createElement('div');
+                card.className = 'station-card';
+                if (index === 0) card.classList.add('active');
+                card.innerHTML = `
+                    <div class="station-icon">${station.icon}</div>
+                    <div class="station-title">${station.name}</div>
+                    <div class="station-freq">${station.freq}</div>
+                    <div class="station-category">${station.category}</div>
+                `;
+                card.onclick = () => changeStation(station, index);
+                grid.appendChild(card);
+            });
         }
+        
+        function changeStation(station, index) {
+            currentStation = station;
+            player.src = station.url;
+            player.load();
+            player.play().catch(e => console.log('Auto-play prevented:', e));
+            
+            // Update UI
+            document.getElementById('currentStationName').innerHTML = station.name;
+            document.getElementById('currentStationCat').innerHTML = station.category + ' | ' + station.freq;
+            
+            // Update active card
+            document.querySelectorAll('.station-card').forEach((card, i) => {
+                if (i === index) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            });
+            
+            // Save to localStorage
+            localStorage.setItem('lastStation', JSON.stringify(station));
+            localStorage.setItem('lastStationIndex', index);
+        }
+        
+        function playCurrentStation() {
+            player.play();
+            document.getElementById('playStatus').innerHTML = '🔴 LIVE';
+        }
+        
+        function pauseRadio() {
+            player.pause();
+            document.getElementById('playStatus').innerHTML = '⏸️ PAUSED';
+        }
+        
+        function stopRadio() {
+            player.pause();
+            player.currentTime = 0;
+            document.getElementById('playStatus').innerHTML = '⏹️ STOPPED';
+        }
+        
+        // Load last played station
+        function loadLastStation() {
+            const lastStation = localStorage.getItem('lastStation');
+            const lastIndex = localStorage.getItem('lastStationIndex');
+            if (lastStation && lastIndex) {
+                const station = JSON.parse(lastStation);
+                const index = parseInt(lastIndex);
+                changeStation(station, index);
+            } else {
+                // Default: Vividh Bharati
+                changeStation(stations[0], 0);
+            }
+        }
+        
+        // Handle page visibility (background play)
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Page hidden - radio continues playing (browser handles it)
+                console.log('Radio playing in background');
+            } else {
+                // Page visible again
+                console.log('Radio visible again');
+            }
+        });
+        
+        // Keep radio playing even when page is inactive
+        player.addEventListener('ended', function() {
+            // Auto-reconnect if stream ends
+            setTimeout(() => {
+                if (!player.paused) {
+                    player.load();
+                    player.play();
+                }
+            }, 2000);
+        });
+        
+        // Initialize
+        loadStations();
+        loadLastStation();
+        
+        // Handle errors and reconnect
+        player.addEventListener('error', function(e) {
+            console.log('Stream error, reconnecting...');
+            setTimeout(() => {
+                player.load();
+                player.play().catch(e => console.log('Reconnect failed'));
+            }, 3000);
+        });
     </script>
 </body>
-</html>
+</html>tml>
