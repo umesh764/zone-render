@@ -184,6 +184,28 @@ class City(db.Model):
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+class LocalShop(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    owner_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    description = db.Column(db.Text)  # Optional
+    address = db.Column(db.String(200))  # Optional
+    city = db.Column(db.String(100))  # Optional
+    phone = db.Column(db.String(15))  # Optional
+    email = db.Column(db.String(100))  # Optional
+    category = db.Column(db.String(50))  # Optional - restaurant, grocery, etc.
+    rating = db.Column(db.Float, default=0.0)  # Optional
+    is_active = db.Column(db.Boolean, default=True)  # ← YEH LINE ADD KARO
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)  # Optional
+    reviews = db.relationship('LocalShopReview', backref='shop', lazy=True)
+
+class LocalShopReview(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    review_text = db.Column(db.String(500))
+    shop_id = db.Column(db.Integer, db.ForeignKey('local_shop.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+
 class Theatre(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
@@ -704,283 +726,152 @@ class TravelReview(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     user = db.relationship('User', backref='travel_reviews')
-class LocalShop(db.Model):
-    """Nagpur Local Market Shops"""
-    __tablename__ = 'local_shops'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    shop_name = db.Column(db.String(100), nullable=False)
-    owner_name = db.Column(db.String(100))
-    category = db.Column(db.String(50), nullable=False)  # Garment, Electronics, Salon, etc.
-    subcategory = db.Column(db.String(50))  # Men, Women, Kids, etc.
-    address = db.Column(db.String(200))
-    area = db.Column(db.String(50))  # Sitabuldi, Dharampeth, etc.
-    phone = db.Column(db.String(15))
-    whatsapp = db.Column(db.String(15))
-    items = db.Column(db.Text)  # Comma separated items
-    description = db.Column(db.Text)
-    image_url = db.Column(db.String(200))
-    opening_time = db.Column(db.String(10))
-    closing_time = db.Column(db.String(10))
-    is_open_sunday = db.Column(db.Boolean, default=True)
-    latitude = db.Column(db.Float)  # For map
-    longitude = db.Column(db.Float)
-    views = db.Column(db.Integer, default=0)
-    rating = db.Column(db.Float, default=0.0)
-    total_ratings = db.Column(db.Integer, default=0)
-    added_by = db.Column(db.Integer, db.ForeignKey('user.id'))
-    is_verified = db.Column(db.Boolean, default=False)
-    is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
-    
-    # Relationships
-    user = db.relationship('User', backref='shops')
-    reviews = db.relationship('LocalShopReview', backref='shop', lazy=True)
-    products = db.relationship('LocalProduct', backref='shop', lazy=True)
-    
-    def get_items_list(self):
-        """Returns list of items from comma-separated string"""
-        return [item.strip() for item in self.items.split(',')] if self.items else []
-    
-    def get_whatsapp_link(self, message=''):
-        """Generate WhatsApp link for ordering"""
-        import urllib.parse
-        phone = self.whatsapp or self.phone
-        if phone:
-            # Remove any non-digit characters
-            phone = ''.join(filter(str.isdigit, phone))
-            if len(phone) == 10:
-                text = f"Hi, I'm interested in {self.shop_name}. {message}"
-                return f"https://wa.me/91{phone}?text={urllib.parse.quote(text)}"
-        return '#'
+# ============================================
+# GOVERNMENT MODELS
+# ============================================
 
-
-class LocalProduct(db.Model):
-    """Products available in local shops"""
-    __tablename__ = 'local_products'
-    
+class GovernmentDepartment(db.Model):
+    """Government departments and services"""
     id = db.Column(db.Integer, primary_key=True)
-    shop_id = db.Column(db.Integer, db.ForeignKey('local_shops.id'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
+    department_type = db.Column(db.String(50))
     description = db.Column(db.Text)
-    price = db.Column(db.Float)
-    original_price = db.Column(db.Float)  # For showing discounts
-    category = db.Column(db.String(50))
-    subcategory = db.Column(db.String(50))
-    image_url = db.Column(db.String(200))
-    stock = db.Column(db.Integer, default=0)
-    unit = db.Column(db.String(20))  # piece, kg, meter, etc.
-    is_available = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    def get_discount_percentage(self):
-        """Calculate discount percentage"""
-        if self.original_price and self.price:
-            return int(((self.original_price - self.price) / self.original_price) * 100)
-        return 0
-
-
-class LocalShopReview(db.Model):
-    """Reviews for local shops"""
-    __tablename__ = 'local_shop_reviews'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    shop_id = db.Column(db.Integer, db.ForeignKey('local_shops.id'), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    rating = db.Column(db.Integer)  # 1-5
-    review = db.Column(db.Text)
-    images = db.Column(db.Text)  # JSON array of image URLs
-    helpful_count = db.Column(db.Integer, default=0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-# ========== USER CLASS - SIRF EK BAAR, TOP PAR HONA CHAHIYE ==========
-
-class LocalCategory(db.Model):
-    """Categories for local market"""
-    __tablename__ = 'local_categories'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False, unique=True)
-    icon = db.Column(db.String(50))  # Font Awesome icon class
-    display_order = db.Column(db.Integer, default=0)
-    is_active = db.Column(db.Boolean, default=True)
-    
-    subcategories = db.relationship('LocalSubCategory', backref='category', lazy=True)
-
-
-class LocalSubCategory(db.Model):
-    """Subcategories under main categories"""
-    __tablename__ = 'local_subcategories'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    category_id = db.Column(db.Integer, db.ForeignKey('local_categories.id'), nullable=False)
-    name = db.Column(db.String(50), nullable=False)
-    display_order = db.Column(db.Integer, default=0)
-    is_active = db.Column(db.Boolean, default=True)
-
-class HeritageSite(db.Model):
-    """भारत और विश्व की धरोहर स्थल"""
-    __tablename__ = 'heritage_sites'
-    __table_args__ = {'extend_existing': True}
-    
-    id = db.Column(db.Integer, primary_key=True)
-    main_image = db.Column(db.String(500))                    # मुख्य तस्वीर
-    gallery_images = db.Column(db.Text)                       # गैलरी (JSON format में)
-    architecture_image = db.Column(db.String(500))            # वास्तुकला की तस्वीर
-    location_image = db.Column(db.String(500))                # स्थान की तस्वीर
-    history_image = db.Column(db.String(500))                 # ऐतिहासिक तस्वीर
-    night_image = db.Column(db.String(500))                   # रात की तस्वीर
-    sketch_image = db.Column(db.String(500))                  # स्केच/ड्राइंग
-    name = db.Column(db.String(200), nullable=False)          # नाम
-    name_hindi = db.Column(db.String(200))                    # हिंदी नाम
-    name_local = db.Column(db.String(200))                    # स्थानीय नाम (विश्व के लिए)
-    category = db.Column(db.String(50))                        # मंदिर, किला, स्मारक, प्राकृतिक, आदि
-    sub_category = db.Column(db.String(50))                    # विशेष श्रेणी
-    country = db.Column(db.String(100))                        # देश
-    country_hindi = db.Column(db.String(100))                  # देश (हिंदी)
-    state = db.Column(db.String(100))                          # राज्य (भारत के लिए)
-    district = db.Column(db.String(100))                       # जिला
-    location = db.Column(db.String(200))                       # स्थान
-    continent = db.Column(db.String(50))                       # महाद्वीप
-    unesco_id = db.Column(db.String(50))                       # यूनेस्को ID (अगर हो)
-    unesco_year = db.Column(db.Integer)                        # यूनेस्को घोषणा वर्ष
-    description = db.Column(db.Text)                           # विवरण
-    history = db.Column(db.Text)                               # ऐतिहासिक कहानी
-    architecture = db.Column(db.Text)                          # वास्तुकला
-    built_by = db.Column(db.String(200))                       # निर्माता
-    built_year = db.Column(db.String(50))                      # निर्माण वर्ष
-    significance = db.Column(db.Text)                          # महत्व
-    visiting_hours = db.Column(db.String(200))                 # दर्शन का समय
-    entry_fee = db.Column(db.String(200))                      # प्रवेश शुल्क
-    best_time = db.Column(db.String(200))                      # घूमने का सबसे अच्छा समय
-    website_url = db.Column(db.String(500))                    # आधिकारिक वेबसाइट
-    image_url = db.Column(db.String(500))                      # तस्वीर
-    latitude = db.Column(db.Float)                             # GPS लोकेशन
-    longitude = db.Column(db.Float)
-    tags = db.Column(db.Text)                                  # सर्च टैग (कॉमा से अलग)
-    is_unesco = db.Column(db.Boolean, default=False)           # यूनेस्को विश्व धरोहर?
-    is_india = db.Column(db.Boolean, default=True)             # भारतीय या अंतर्राष्ट्रीय?
+    icon = db.Column(db.String(100))
+    services = db.Column(db.Text)  # JSON
+    fees = db.Column(db.Float)
+    processing_time = db.Column(db.String(100))
+    documents_required = db.Column(db.Text)  # JSON
+    eligibility = db.Column(db.Text)
+    website_url = db.Column(db.String(500))
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    def get_tags_list(self):
-        return [tag.strip() for tag in self.tags.split(',')] if self.tags else []
-class LocalArea(db.Model):
-    """Areas in Nagpur for filtering"""
-    __tablename__ = 'local_areas'
-    
+
+class GovernmentApplication(db.Model):
+    """User applications for government services"""
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False, unique=True)
-    pincode = db.Column(db.String(10))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    department_id = db.Column(db.Integer, db.ForeignKey('government_department.id'), nullable=False)
+    application_number = db.Column(db.String(50), unique=True)
+    service_type = db.Column(db.String(100))
+    status = db.Column(db.String(20), default='pending')
+    documents = db.Column(db.Text)  # JSON
+    payment_id = db.Column(db.Integer, db.ForeignKey('payment.id'))
+    remarks = db.Column(db.Text)
+    submitted_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    user = db.relationship('User', backref='gov_applications')
+    department = db.relationship('GovernmentDepartment', backref='applications')
+# ============================================
+# BHARAT/MODELINE MODELS
+# ============================================
+
+class BharatDarshan(db.Model):
+    """Bharat Darshan - Tourism and cultural heritage"""
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    category = db.Column(db.String(50))  # pilgrimage, heritage, nature, adventure
+    state = db.Column(db.String(100))
+    city = db.Column(db.String(100))
+    description = db.Column(db.Text)
+    history = db.Column(db.Text)
+    best_time_to_visit = db.Column(db.String(200))
+    how_to_reach = db.Column(db.Text)  # JSON: {air, train, road}
+    entry_fee = db.Column(db.Float)
+    timings = db.Column(db.String(200))
+    images = db.Column(db.Text)  # JSON array
+    video_url = db.Column(db.String(500))
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
-    is_active = db.Column(db.Boolean, default=True)
-# Add this to your modules/models.py file
-
-class StateDashboard(db.Model):
-    """राज्यों के लिए गवर्नमेंट डैशबोर्ड डेटा"""
-    __tablename__ = 'state_dashboard'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    state_name = db.Column(db.String(100), nullable=False, unique=True)
-    
-    # 🥇 मुख्यमंत्री और मंत्रीमंडल
-    cm_name = db.Column(db.String(200))
-    cm_photo = db.Column(db.String(500))
-    ministers = db.Column(db.Text)  # JSON string
-    
-    # 🌾 कृषि डेटा
-    agri_data = db.Column(db.Text)  # JSON string
-    
-    # 👗 संस्कृति डेटा
-    culture_data = db.Column(db.Text)  # JSON string
-    
-    # 🏛️ प्राचीन स्थल
-    ancient_sites = db.Column(db.Text)  # JSON string
-    
-    # 🛍️ प्रसिद्ध बाजार
-    famous_markets = db.Column(db.Text)  # JSON string
-    
-    # 📊 सांख्यिकी
-    statistics = db.Column(db.Text)  # JSON string
-    
-    # 🌍 भौगोलिक माहिती
-    geography = db.Column(db.Text)  # JSON string
-    
-    # 👥 प्रसिद्ध व्यक्ती
-    famous_personalities = db.Column(db.Text)  # JSON string
-    
-    # 🚂 परिवहन
-    transport = db.Column(db.Text)  # JSON string
-    
-    is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<StateDashboard {self.state_name}>'
-class GovernmentDepartment(db.Model):
-    """सरकारी विभागों और मंत्रालयों के लिए मॉडल"""
-    __tablename__ = 'gov_departments'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(200), nullable=False)          # विभाग का नाम (जैसे, नागपुर महानगरपालिका)
-    name_hindi = db.Column(db.String(200))  # हिंदी नाम
-    description = db.Column(db.Text)                          # संक्षिप्त विवरण
-    website_url = db.Column(db.String(500), nullable=False)   # मुख्य वेबसाइट लिंक
-    category = db.Column(db.String(100))                       # श्रेणी: केंद्र सरकार, राज्य सरकार, स्थानीय निकाय
-    sub_category = db.Column(db.String(100))                   # उप-श्रेणी: मंत्रालय, विभाग, नगर निगम
-    parent_ministry = db.Column(db.String(200))                # मुख्य मंत्रालय (जैसे, गृह मंत्रालय)
-    state = db.Column(db.String(50))                           # राज्य (जैसे, महाराष्ट्र)
-    city = db.Column(db.String(100))                           # शहर (जैसे, मुंबई, नागपुर)
-    logo_url = db.Column(db.String(300))                       # लोगो (अगर हो तो)
-    search_tags = db.Column(db.Text)                           # सर्च के लिए टैग (कॉमा से अलग किए हुए, जैसे 'प्रधानमंत्री, पीएमओ, pm')
-    is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, onupdate=datetime.utcnow)
-class BharatDarshan(db.Model):
-    """भारत के सभी राज्यों के धरोहर, त्योहार, बाज़ार, वेशभूषा, परिवहन और स्थानीय जानकारी"""
-    __tablename__ = 'bharat_darshan'
-    __table_args__ = {'extend_existing': True}
-    
-    id = db.Column(db.Integer, primary_key=True)
-    state = db.Column(db.String(100), nullable=False)               # राज्य
-    district = db.Column(db.String(100))                            # जिला
-    city = db.Column(db.String(100))                                # शहर
-    category = db.Column(db.String(50))                             # मंदिर, किला, त्योहार, बाज़ार, भोजन, वेशभूषा, परिवहन, संस्कृति, प्राकृतिक
-    subcategory = db.Column(db.String(50))                          # उपश्रेणी
-    name = db.Column(db.String(200), nullable=False)                # नाम (जैसे, दुर्गा पूजा, बनारसी साड़ी, चांदनी चौक)
-    name_hindi = db.Column(db.String(200))                          # हिंदी नाम
-    description = db.Column(db.Text)                                # विवरण
-    history = db.Column(db.Text)                                    # इतिहास / पौराणिक कथा
-    significance = db.Column(db.Text)                               # महत्व
-    cultural_facts = db.Column(db.Text)                             # सांस्कृतिक तथ्य
-    dress_code = db.Column(db.Text)                                 # पहनावा / वेशभूषा [citation:1][citation:7]
-    cuisine = db.Column(db.Text)                                    # प्रसिद्ध भोजन / व्यंजन [citation:8]
-    best_time_to_visit = db.Column(db.String(200))                  # घूमने का सबसे अच्छा समय
-    duration = db.Column(db.String(100))                            # अवधि (त्योहारों के लिए)
-    festival_month = db.Column(db.String(50))                       # त्योहार का महीना [citation:1][citation:4]
-    address = db.Column(db.String(500))                             # पता
-    latitude = db.Column(db.Float)                                  # GPS लोकेशन
-    longitude = db.Column(db.Float)
-    how_to_reach = db.Column(db.Text)                               # कैसे पहुंचे (ट्रेन, बस, फ्लाइट) [citation:2]
-    nearest_railway = db.Column(db.String(200))                     # नजदीकी रेलवे स्टेशन
-    nearest_airport = db.Column(db.String(200))                     # नजदीकी हवाई अड्डा
-    nearest_bus_stop = db.Column(db.String(200))                    # नजदीकी बस स्टैंड
-    local_transport = db.Column(db.Text)                            # स्थानीय परिवहन (मेट्रो, ऑटो, रिक्शा) [citation:2]
-    famous_markets = db.Column(db.Text)                             # आसपास के प्रसिद्ध बाज़ार [citation:5][citation:8]
-    famous_food = db.Column(db.Text)                                # स्थानीय प्रसिद्ध व्यंजन [citation:8]
-    languages = db.Column(db.String(200))                           # बोली जाने वाली भाषाएँ [citation:1]
-    main_image = db.Column(db.String(500))                          # मुख्य तस्वीर
-    gallery_images = db.Column(db.Text)                             # गैलरी (JSON)
-    map_url = db.Column(db.String(500))                             # गूगल मैप लिंक [citation:2]
+    rating = db.Column(db.Float, default=0.0)
+    total_visitors = db.Column(db.Integer, default=0)
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def get_tags_list(self):
-        """सर्च टैग्स को लिस्ट में बदलें"""
-        return [tag.strip() for tag in self.search_tags.split(',')] if self.search_tags else []
+class BharatTourPackage(db.Model):
+    """Tour packages for Bharat Darshan"""
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    duration_days = db.Column(db.Integer)
+    destinations = db.Column(db.Text)  # JSON array of place IDs
+    itinerary = db.Column(db.Text)  # JSON with day-wise details
+    inclusions = db.Column(db.Text)  # JSON array
+    exclusions = db.Column(db.Text)  # JSON array
+    price_per_person = db.Column(db.Float)
+    discount_price = db.Column(db.Float)
+    group_size = db.Column(db.Integer)
+    start_dates = db.Column(db.Text)  # JSON array
+    images = db.Column(db.Text)  # JSON array
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __repr__(self):
-        return f'<GovDept {self.name}>'
+# ============================================
+# HERITAGE MODELS
+# ============================================
+
+class HeritageSite(db.Model):
+    """UNESCO and cultural heritage sites"""
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    location = db.Column(db.String(200))
+    state = db.Column(db.String(100))
+    unesco_status = db.Column(db.String(50))  # World Heritage, Tentative
+    year_inscribed = db.Column(db.Integer)
+    description = db.Column(db.Text)
+    architecture_style = db.Column(db.String(100))
+    built_by = db.Column(db.String(200))
+    built_year = db.Column(db.Integer)
+    visiting_hours = db.Column(db.String(200))
+    entry_fee = db.Column(db.Float)
+    images = db.Column(db.Text)  # JSON array
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+# ============================================
+# SHOPPING/MARKET MODELS
+# ============================================
+
+class Product(db.Model):
+    """Products for shopping module"""
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    category = db.Column(db.String(100))
+    subcategory = db.Column(db.String(100))
+    description = db.Column(db.Text)
+    price = db.Column(db.Float, nullable=False)
+    discount_price = db.Column(db.Float)
+    stock = db.Column(db.Integer, default=0)
+    images = db.Column(db.Text)  # JSON array
+    specifications = db.Column(db.Text)  # JSON
+    rating = db.Column(db.Float, default=0.0)
+    total_reviews = db.Column(db.Integer, default=0)
+    is_active = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class Order(db.Model):
+    """Orders for shopping"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    order_number = db.Column(db.String(50), unique=True)
+    total_amount = db.Column(db.Float, nullable=False)
+    shipping_address = db.Column(db.Text)
+    payment_method = db.Column(db.String(50))
+    payment_id = db.Column(db.Integer, db.ForeignKey('payment.id'))
+    status = db.Column(db.String(20), default='pending')  # pending, processing, shipped, delivered, cancelled
+    tracking_number = db.Column(db.String(100))
+    ordered_at = db.Column(db.DateTime, default=datetime.utcnow)
+    delivered_at = db.Column(db.DateTime)
+    
+    user = db.relationship('User', backref='orders')
+
+class OrderItem(db.Model):
+    """Items in an order"""
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    total = db.Column(db.Float, nullable=False)
+    
+    order = db.relationship('Order', backref='items')
+    product = db.relationship('Product', backref='order_items')

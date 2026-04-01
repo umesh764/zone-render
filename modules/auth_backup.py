@@ -131,8 +131,8 @@ VERIFY_SERVICE_SID = "VAa8907e2d93d29657cda136e8773347e7"
 
 # Twilio client initialization
 twilio_client = Client(
-    os.environ.get('TWILIO_ACCOUNT_SID'),
-    os.environ.get('TWILIO_AUTH_TOKEN')
+    TWILIO_ACCOUNT_SID,
+    TWILIO_AUTH_TOKEN
 )
 # VERIFY_SERVICE_SID = os.environ.get('TWILIO_VERIFY_SERVICE')
 
@@ -339,25 +339,3 @@ def handle_social_login(email, name, provider):
     login_user(user)
     flash(f'Logged in with {provider}!', 'success')
     return redirect(url_for('payment.dashboard'))  # ← यह line change करें
-
-@auth_bp.route('/reset-password', methods=['GET', 'POST'])
-def reset_password():
-    """Reset password page"""
-    if request.method == 'POST':
-        otp = request.form.get('otp')
-        new_password = request.form.get('new_password')
-        
-        if session.get('reset_otp') == otp:
-            phone = session.get('reset_phone')
-            user = User.query.filter_by(phone=phone).first()
-            if user:
-                user.password = bcrypt.generate_password_hash(new_password).decode('utf-8')
-                db.session.commit()
-                flash('Password reset successful! Please login.', 'success')
-                session.pop('reset_otp', None)
-                session.pop('reset_phone', None)
-                return redirect(url_for('auth.login'))
-        else:
-            flash('Invalid OTP', 'error')
-    
-    return render_template('auth/reset_password.html')

@@ -1,29 +1,280 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - HAT PAY</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: Arial; background: linear-gradient(135deg, #FF6B35, #FF4500); height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .login-container { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 350px; }
-        h2 { color: #FF6B35; margin-bottom: 30px; text-align: center; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 5px; color: #333; font-weight: bold; }
-        input { width: 100%; padding: 10px; border: 2px solid #ddd; border-radius: 5px; font-size: 16px; }
-        input:focus { outline: none; border-color: #FF6B35; }
-        button { width: 100%; padding: 12px; background: #FF6B35; color: white; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; }
-        button:hover { background: #FF4500; }
-        .links { margin-top: 20px; text-align: center; }
-        .links a { color: #FF6B35; text-decoration: none; margin: 0 10px; }
-        .flash-messages { margin-bottom: 20px; }
-        .flash-success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
-        .flash-error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin-bottom: 10px; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3); 
+            width: 100%;
+            max-width: 400px;
+            animation: fadeInUp 0.5s ease;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        h2 { 
+            color: #667eea; 
+            margin-bottom: 30px; 
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .form-group { 
+            margin-bottom: 20px; 
+        }
+        
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            color: #333; 
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input { 
+            width: 100%; 
+            padding: 12px 15px; 
+            border: 2px solid #e0e0e0; 
+            border-radius: 10px; 
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        input:focus { 
+            outline: none; 
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.1);
+        }
+        
+        button { 
+            width: 100%; 
+            padding: 12px; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            border: none; 
+            border-radius: 10px; 
+            font-size: 16px; 
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+        
+        .links { 
+            margin-top: 25px; 
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .links a { 
+            color: #667eea; 
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .links a:hover { 
+            text-decoration: underline;
+            color: #764ba2;
+        }
+        
+        .flash-messages { 
+            margin-bottom: 20px; 
+        }
+        
+        .flash-success { 
+            background: #d4edda; 
+            color: #155724; 
+            padding: 12px; 
+            border-radius: 10px; 
+            margin-bottom: 10px;
+            border-left: 4px solid #28a745;
+            font-size: 14px;
+        }
+        
+        .flash-error { 
+            background: #f8d7da; 
+            color: #721c24; 
+            padding: 12px; 
+            border-radius: 10px; 
+            margin-bottom: 10px;
+            border-left: 4px solid #dc3545;
+            font-size: 14px;
+        }
+        
+        .flash-info { 
+            background: #d1ecf1; 
+            color: #0c5460; 
+            padding: 12px; 
+            border-radius: 10px; 
+            margin-bottom: 10px;
+            border-left: 4px solid #17a2b8;
+            font-size: 14px;
+        }
+        
+        /* Social Login Styles */
+        .social-login {
+            margin: 25px 0;
+        }
+        
+        .divider {
+            text-align: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 45%;
+            height: 1px;
+            background: #e0e0e0;
+        }
+        
+        .divider::before { left: 0; }
+        .divider::after { right: 0; }
+        
+        .divider span {
+            background: white;
+            padding: 0 15px;
+            color: #999;
+            font-size: 12px;
+            text-transform: uppercase;
+        }
+        
+        .social-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .social-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            border: 2px solid #e0e0e0;
+            background: white;
+            color: #333;
+        }
+        
+        .social-btn i {
+            font-size: 18px;
+        }
+        
+        .google-btn:hover {
+            border-color: #DB4437;
+            color: #DB4437;
+        }
+        
+        .facebook-btn:hover {
+            border-color: #4267B2;
+            color: #4267B2;
+        }
+        
+        .github-btn:hover {
+            border-color: #333;
+            color: #333;
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+        }
+        
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .remember-me input {
+            width: auto;
+            margin: 0;
+        }
+        
+        .remember-me label {
+            margin: 0;
+            font-weight: normal;
+            font-size: 13px;
+        }
+        
+        .forgot-link {
+            font-size: 13px;
+        }
+        
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+            
+            .social-buttons {
+                flex-direction: column;
+            }
+            
+            .links {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
         <h2>🔐 Login to HAT PAY</h2>
         
+        <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="flash-messages">
@@ -33,110 +284,58 @@
                 </div>
             {% endif %}
         {% endwith %}
-<!-- Social Login Section -->
-<div class="social-login">
-    <div class="divider">
-        <span>OR CONTINUE WITH</span>
-    </div>
-    
-    <div class="social-buttons">
-        <a href="{{ url_for('auth.google_login') }}" class="social-btn google-btn">
-            <i class="fab fa-google"></i> Google
-        </a>
-        <a href="{{ url_for('auth.facebook_login') }}" class="social-btn facebook-btn">
-            <i class="fab fa-facebook-f"></i> Facebook
-        </a>
-        <a href="{{ url_for('auth.github_login') }}" class="social-btn github-btn">
-            <i class="fab fa-github"></i> GitHub
-        </a>
-    </div>
-</div>
-
-<style>
-.social-login {
-    margin-top: 2rem;
-}
-.divider {
-    text-align: center;
-    margin: 1.5rem 0;
-    position: relative;
-}
-.divider::before,
-.divider::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 40%;
-    height: 1px;
-    background: #e0e0e0;
-}
-.divider::before { left: 0; }
-.divider::after { right: 0; }
-.divider span {
-    background: white;
-    padding: 0 1rem;
-    color: #999;
-    font-size: 0.85rem;
-}
-.social-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-.social-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.75rem;
-    padding: 0.75rem;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    border: 1px solid #e0e0e0;
-}
-.google-btn {
-    background: white;
-    color: #333;
-}
-.google-btn:hover {
-    background: #f8f8f8;
-    border-color: #4285F4;
-}
-.facebook-btn {
-    background: #1877F2;
-    color: white;
-    border: none;
-}
-.facebook-btn:hover {
-    background: #166fe5;
-}
-.github-btn {
-    background: #333;
-    color: white;
-    border: none;
-}
-.github-btn:hover {
-    background: #24292e;
-}
-</style>
         
-        <form method="POST" action="{{ url_for('auth.login') }}">
-                   <!-- ⬇️⬇️⬇️ YEH LINE ADD KI HAI - CSRF TOKEN ⬇️⬇️⬇️ -->
-            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            
-            <div class="form-group">
-                <label>📱 Mobile Number</label>
-                <input type="tel" name="phone" pattern="[6-9][0-9]{9}" placeholder="10-digit mobile number" required>
+        <!-- Social Login Section -->
+        <div class="social-login">
+            <div class="divider">
+                <span>OR CONTINUE WITH</span>
             </div>
             
-            <div class="form-group">
-                <label>🔑 Password</label>
-                <input type="password" name="password" placeholder="Enter password" required>
+            <div class="social-buttons">
+                <a href="{{ url_for('auth.google_login') }}" class="social-btn google-btn">
+                    <i class="fab fa-google"></i> Google
+                </a>
+                <a href="{{ url_for('auth.facebook_login') }}" class="social-btn facebook-btn">
+                    <i class="fab fa-facebook-f"></i> Facebook
+                </a>
+                <a href="{{ url_for('auth.github_login') }}" class="social-btn github-btn">
+                    <i class="fab fa-github"></i> GitHub
+                </a>
+            </div>
+        </div>
+        
+        <!-- Mobile Login Form -->
+        <div class="mobile-login">
+            <div class="divider">
+                <span>OR LOGIN WITH MOBILE</span>
             </div>
             
-            <button type="submit">Login ➤</button>
-        </form>
+            <form method="POST" action="{{ url_for('auth.login') }}">
+                <!-- CSRF Token - Important for security -->
+                {% if csrf_token %}
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                {% endif %}
+                
+                <div class="form-group">
+                    <label>📱 Mobile Number</label>
+                    <input type="tel" name="phone" pattern="[6-9][0-9]{9}" placeholder="10-digit mobile number" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>🔑 Password</label>
+                    <input type="password" name="password" placeholder="Enter password" required>
+                </div>
+                
+                <div class="remember-forgot">
+                    <label class="remember-me">
+                        <input type="checkbox" name="remember"> Remember Me
+                    </label>
+                    <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">Forgot Password?</a>
+                </div>
+                
+                <button type="submit">Login ➤</button>
+            </form>
+        </div>
         
         <div class="links">
             <a href="{{ url_for('auth.register') }}">✨ New User? Register</a>
@@ -144,4 +343,4 @@
         </div>
     </div>
 </body>
-</html>
+</html></html>

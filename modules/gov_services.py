@@ -293,7 +293,12 @@ class GovernmentServices:
             'ministry': 'Supreme Court'
         }
     }
-    
+     @staticmethod
+    def get_department_by_type(dept_type):
+        """Get department by type"""
+        # Temporary implementation
+        return None 
+   
     @classmethod
     def get_all_services(cls):
         return cls.SERVICES
@@ -318,3 +323,52 @@ class GovernmentServices:
     @classmethod
     def count_services(cls):
         return len(cls.SERVICES)
+    """Government Services Helper Module"""
+
+class GovernmentServices:
+    """Helper class for government services"""
+    
+    @staticmethod
+    def get_categories():
+        """Get all service categories"""
+        return ['Passport', 'Driving License', 'PAN Card', 'Aadhaar', 'Voter ID', 'Birth Certificate', 'Marriage Certificate']
+    
+    @staticmethod
+    def count_services():
+        """Count total services"""
+        return len(GovernmentServices.get_categories())
+    
+    @staticmethod
+    def get_service(service_name):
+        """Get service details by name"""
+        services = {
+            'Passport': {
+                'name': 'Passport',
+                'description': 'नया पासपोर्ट बनवाने, रिन्यूअल और संशोधन के लिए आवेदन करें',
+                'fees': 1500,
+                'processing_time': '7-15 दिन',
+                'documents': ['आधार कार्ड', 'जन्म प्रमाण पत्र', 'पता प्रमाण', 'शैक्षणिक प्रमाण पत्र']
+            },
+            'Driving License': {
+                'name': 'Driving License',
+                'description': 'लर्नर लाइसेंस, पक्का लाइसेंस और रिन्यूअल के लिए आवेदन करें',
+                'fees': 500,
+                'processing_time': '15-30 दिन',
+                'documents': ['आधार कार्ड', 'पता प्रमाण', 'आयु प्रमाण', 'ड्राइविंग टेस्ट']
+            },
+            'PAN Card': {
+                'name': 'PAN Card',
+                'description': 'नया पैन कार्ड, सुधार और रिप्रिंट के लिए आवेदन करें',
+                'fees': 107,
+                'processing_time': '15-30 दिन',
+                'documents': ['आधार कार्ड', 'पता प्रमाण', 'पहचान प्रमाण']
+            },
+            'Aadhaar': {
+                'name': 'Aadhaar',
+                'description': 'नया आधार कार्ड, अपडेट और सुधार के लिए आवेदन करें',
+                'fees': 0,
+                'processing_time': '30-45 दिन',
+                'documents': ['जन्म प्रमाण पत्र', 'पता प्रमाण', 'पहचान प्रमाण']
+            }
+        }
+        return services.get(service_name, None)
