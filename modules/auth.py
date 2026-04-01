@@ -216,11 +216,12 @@ def login():
     if request.method == 'POST':
         phone = request.form.get('phone')
         password = request.form.get('password')
+        remember = True if request.form.get('remember') else False  # ← YEH LINE ADD
         
         user = User.query.filter_by(phone=phone).first()
         
         if user and bcrypt.check_password_hash(user.password, password):
-            login_user(user)
+            login_user(user, remember=remember)  # ← remember PARAMETER ADD
             flash(f'Welcome back, {user.name}!', 'success')
             return redirect(url_for('payment.dashboard'))
         else:
@@ -234,7 +235,6 @@ def logout():
     logout_user()
     flash('You have been logged out', 'success')
     return redirect(url_for('auth.login'))
-
 @auth_bp.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
